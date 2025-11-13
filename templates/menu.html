@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoMarket - Menú Principal</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+    font-family: 'Poppins', Arial, sans-serif;
+    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+    color: #2e7d32;
+    padding: 30px;
+}
+
+/* Header */
+.header {
+    text-align: center;
+    background: linear-gradient(90deg,#165c19,#43a047);
+    color:white;
+    padding: 50px 20px;
+    border-radius: 30px;
+    margin-bottom: 50px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
+}
+.header h1 {
+    font-size: 5em;
+    font-weight: 800;
+    text-shadow: 2px 3px 6px rgba(0,0,0,0.25);
+}
+.header p {
+    margin-top: 15px;
+    font-size: 1.2em;
+    font-weight: 500;
+}
+
+/* Menu grid */
+.menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 30px;
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Cards */
+.card {
+    background: white;
+    border-radius: 30px;
+    padding: 40px 25px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(76,175,80,0.2);
+    transition: transform 0.4s, box-shadow 0.4s;
+    cursor: pointer;
+    position: relative;
+}
+.card:hover {
+    transform: translateY(-8px) scale(1.08);
+    box-shadow: 0 15px 35px rgba(76,175,80,0.4);
+}
+.card h3 {
+    color: #2e7d32;
+    margin-bottom: 18px;
+    font-size: 1.8em;
+}
+.card p {
+    color: #555;
+    font-size: 1em;
+}
+
+/* SVG Icons */
+.card svg {
+    width: 80px;
+    height: 80px;
+    fill: #43a047;
+    margin-bottom: 20px;
+    transition: transform 0.4s, fill 0.4s;
+}
+.card:hover svg {
+    transform: rotate(15deg) scale(1.1);
+    fill: #66bb6a;
+}
+
+/* Logout button */
+.logout {
+    display: block;
+    max-width: 240px;
+    margin: 50px auto 0;
+    padding: 18px;
+    background: linear-gradient(90deg, #43a047, #66bb6a);
+    color:white;
+    text-align:center;
+    border-radius: 14px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 1.1em;
+    transition: background 0.3s, transform 0.3s;
+}
+.logout:hover { 
+    background: linear-gradient(90deg, #388e3c, #43a047); 
+    transform: scale(1.05);
+}
+</style>
+</head>
+<body>
+
+<div class="header">
+    <h1>EcoMarket</h1>
+    <p>Bienvenido a EcoMarket: calidad, conciencia y comodidad.</p>
+</div>
+
+<div class="menu">
+    <div class="card" onclick="location.href='/products-page'">
+        <!-- Icono de productos -->
+        <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm3 3h8v2H8V8zm0 4h8v2H8v-2z"/></svg>
+        <h3>Productos</h3>
+        <p>Ver y administrar productos</p>
+    </div>
+    <div class="card" onclick="location.href='/categories-page'">
+        <!-- Icono de categorías -->
+        <svg viewBox="0 0 24 24"><path d="M4 4h6v6H4V4zm0 10h6v6H4v-6zm10-10h6v6h-6V4zm0 10h6v6h-6v-6z"/></svg>
+        <h3>Categorías</h3>
+        <p>Gestiona las categorías disponibles</p>
+    </div>
+    <div class="card" onclick="location.href='/solicitudes-page'">
+        <!-- Icono de solicitudes/pedidos -->
+        <svg viewBox="0 0 24 24"><path d="M3 3h18v2H3V3zm0 4h18v14H3V7zm2 2v10h14V9H5z"/></svg>
+        <h3>Solicitudes</h3>
+        <p>Revisar pedidos o solicitudes</p>
+    </div>
+    <div class="card" onclick="location.href='/comments-page'">
+        <!-- Icono de comentarios -->
+        <svg viewBox="0 0 24 24"><path d="M4 4h16v12H5.17L4 17.17V4zm0-2a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H4z"/></svg>
+        <h3>Sistema de Clientes</h3>
+        <p>Ver y responder comentarios de clientes</p>
+    </div>
+</div>
+
+<a class="logout" href="/login">Cerrar sesión</a>
+
+</body>
+</html>

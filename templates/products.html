@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoMarket - Productos</title>
+<style>
+body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #e8f5e9 0%, #6cbb80be 100%);
+    padding: 30px;
+    color: #2e7d32;
+}
+h1 {
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+.container {
+    max-width: 900px;
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    margin: auto;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+.filter-bar {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    align-items: center;
+}
+select, button {
+    padding: 10px 15px;
+    border-radius: 10px;
+    border: 1px solid #a5d6a7;
+    font-size: 15px;
+    background-color: #f1fff1;
+}
+button {
+    background: linear-gradient(90deg, #43a047, #4caf50);
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+button:hover { background: linear-gradient(90deg, #388e3c, #43a047); }
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #c8e6c9;
+    text-align: left;
+}
+th {
+    background: #43a047;
+    color: white;
+    text-transform: uppercase;
+}
+tr:hover {
+    background-color: #f1fff1;
+}
+.status-message {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+}
+a {
+    color: #388e3c;
+    text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>Productos EcoMarket</h1>
+
+<div class="container">
+    <div class="filter-bar">
+        <div>
+            <label for="category">Categoría:</label>
+            <select id="category">
+                <option value="">Todas</option>
+                <option value="ropa">Ropa</option>
+                <option value="electronicos">Electrónicos</option>
+                <option value="muebles">Muebles</option>
+                <option value="libros">Libros</option>
+                <option value="otros">Otros</option>
+            </select>
+            <button id="filterBtn">Filtrar</button>
+        </div>
+        <a href="/menu">⬅ Volver al menú</a>
+    </div>
+
+    <table id="productsTable">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+    <div class="status-message" id="statusMessage"></div>
+</div>
+
+<script>
+const API_BASE = "http://127.0.0.1:9000";
+
+async function cargarProductos(categoria="") {
+    const status = document.getElementById("statusMessage");
+    status.textContent = "Cargando productos...";
+    try {
+        const res = await fetch(`${API_BASE}/products${categoria ? '?category=' + categoria : ''}`);
+        const data = await res.json();
+
+        const tbody = document.querySelector("#productsTable tbody");
+        tbody.innerHTML = "";
+        if(data.length === 0) {
+            status.textContent = "No hay productos para mostrar.";
+            return;
+        }
+
+        data.forEach(p => {
+            const row = `
+                <tr>
+                    <td>${p.name}</td>
+                    <td>${p.description || ""}</td>
+                    <td>${p.category}</td>
+                    <td>${p.status || "disponible"}</td>
+                </tr>
+            `;
+            tbody.innerHTML += row;
+        });
+        status.textContent = "";
+    } catch (err) {
+        status.textContent = "Error al cargar los productos: " + err.message;
+    }
+}
+
+document.getElementById("filterBtn").addEventListener("click", () => {
+    const cat = document.getElementById("category").value;
+    cargarProductos(cat);
+});
+
+// Cargar todos al inicio
+cargarProductos();
+</script>
+<tbody>
+{% for p in products %}
+<tr>
+    <td>{{ p.name }}</td>
+    <td>{{ p.description }}</td>
+    <td>{{ p.category }}</td>
+    <td>{{ p.status }}</td>
+    <td>
+        {% if p.image_url %}
+            <img src="{{ p.image_url }}" width="80">
+        {% else %}
+            Sin imagen
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+</tbody>
+
+</body>
+</html>

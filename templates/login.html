@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoMarket - Inicio de Sesión</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: "Poppins", Arial, sans-serif;
+    background: linear-gradient(135deg, #e8f5e9 0%, #6cbb80be 100%);
+    padding: 40px;
+    color: #2e7d32;
+}
+.header {
+    max-width: 600px;
+    text-align: center;
+    background: linear-gradient(90deg, #165c19, #9dcf9f);
+    color: white;
+    padding: 35px;
+    border-radius: 40px;
+    margin: 0 auto 20px auto;
+    margin-top: 20px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+}
+.header h1 { font-size: 5em; font-weight: 800; text-shadow: 1px 2px 3px rgba(0,0,0,0.2); }
+.container {
+    max-width: 400px;
+    margin: 0 auto;
+    background: #ffffff;
+    padding: 35px;
+    border-radius: 25px;
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.15);
+    border: 2px solid #c8e6c9;
+}
+h2 {
+    color: #2e7d32;
+    margin-bottom: 25px;
+    text-align: center;
+    font-weight: 800;
+    font-size: 28px;
+}
+.form-group { margin-bottom: 18px; }
+label { display: block; margin-bottom: 6px; color: #33691e; font-weight: 600; font-size: 14px; }
+input {
+    width: 100%; padding: 12px; border: 1.5px solid #a5d6a7;
+    border-radius: 8px; font-size: 15px; background-color: #f9fff9;
+    transition: all 0.3s ease;
+}
+input:focus {
+    outline: none; border-color: #43a047; box-shadow: 0 0 6px rgba(67,160,71,0.3);
+    background-color: #ffffff;
+}
+button {
+    width: 100%; padding: 14px; background: linear-gradient(90deg, #43a047, #4caf50);
+    color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: 600;
+    cursor: pointer; margin-top: 12px; transition: background 0.3s, transform 0.2s;
+}
+button:hover { background: linear-gradient(90deg, #388e3c, #43a047); transform: scale(1.02); }
+.status-message {
+    padding: 10px; margin-top: 15px; border-radius: 5px; text-align: center; display: none;
+}
+.status-message.success { background-color: #d4edda; color: #155724; }
+.status-message.error { background-color: #f8d7da; color: #721c24; }
+.login-link { text-align: center; margin-top: 20px; font-size: 15px; }
+.login-link a { color: #388e3c; text-decoration: none; font-weight: 600; }
+.login-link a:hover { color: #1b5e20; }
+</style>
+</head>
+<body>
+
+<div class="header"><h1>EcoMarket</h1></div>
+
+<div class="container">
+    <h2>Iniciar Sesión</h2>
+    <form id="loginForm" novalidate>
+        <div class="form-group">
+            <label for="username">Nombre de Usuario:</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+        <button type="submit">Ingresar</button>
+    </form>
+    <div class="status-message" id="statusMessage"></div>
+    <div class="login-link">
+        <p>¿No tienes cuenta? <a href="/register">Regístrate</a></p>
+    </div>
+</div>
+
+<script>
+const API_BASE = 'http://127.0.0.1:9000'; // Asegúrate que coincide con el puerto donde corre uvicorn
+
+document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const statusMessage = document.getElementById('statusMessage');
+    statusMessage.style.display = 'none';
+    statusMessage.textContent = '';
+
+    // Validación local: no enviar si están vacíos
+    if(!form.username.value.trim() || !form.password.value.trim()){
+        statusMessage.textContent = "Ingrese usuario y contraseña";
+        statusMessage.className = 'status-message error';
+        statusMessage.style.display = 'block';
+        return;
+    }
+
+    const formData = new FormData(form);
+
+    try {
+        const res = await fetch(`${API_BASE}/login`, {
+            method: 'POST',
+            body: formData
+        });
+
+        if(res.ok){
+            statusMessage.textContent = '¡Inicio de sesión exitoso! Redirigiendo... 🌱';
+            statusMessage.className = 'status-message success';
+            statusMessage.style.display = 'block';
+            setTimeout(() => { window.location.href = '/menu'; }, 1200);
+        } else {
+            const contentType = res.headers.get('content-type');
+            let errorData;
+            if(contentType && contentType.indexOf('application/json') !== -1){
+                const d = await res.json();
+                errorData = d.detail || JSON.stringify(d);
+            } else {
+                errorData = await res.text();
+            }
+            statusMessage.textContent = `Error: ${errorData}`;
+            statusMessage.className = 'status-message error';
+            statusMessage.style.display = 'block';
+        }
+    } catch(err){
+        statusMessage.textContent = `Error de conexión: ${err.message}`;
+        statusMessage.className = 'status-message error';
+        statusMessage.style.display = 'block';
+    }
+});
+
+</script>
+</body>
+</html>

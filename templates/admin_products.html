@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoMarket - Panel Admin Productos</title>
+<style>
+body {
+    font-family: "Poppins", sans-serif;
+    background: linear-gradient(135deg, #e8f5e9 0%, #6cbb80be 100%);
+    padding: 30px;
+    color: #2e7d32;
+}
+h1 {
+    text-align: center;
+    font-size: 2.5em;
+    font-weight: 800;
+    margin-bottom: 20px;
+}
+.container {
+    max-width: 900px;
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    margin: auto;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+}
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+input, select, button {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #a5d6a7;
+    font-size: 15px;
+}
+button {
+    background: linear-gradient(90deg, #43a047, #4caf50);
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+button:hover {
+    background: linear-gradient(90deg, #388e3c, #43a047);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #c8e6c9;
+    text-align: left;
+}
+th {
+    background: #43a047;
+    color: white;
+    text-transform: uppercase;
+}
+tr:hover {
+    background-color: #f1fff1;
+}
+a {
+    color: #388e3c;
+    text-decoration: none;
+}
+a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<h1>Panel de Administración de Productos</h1>
+<div class="container">
+
+    <form method="POST" action="/admin/products">
+        <h2>Agregar nuevo producto</h2>
+        <input type="text" name="name" placeholder="Nombre del producto" required>
+        <input type="text" name="description" placeholder="Descripción (opcional)">
+        <select name="category" required>
+            <option value="">Seleccionar categoría</option>
+            <option value="ropa">Ropa</option>
+            <option value="electronicos">Electrónicos</option>
+            <option value="muebles">Muebles</option>
+            <option value="libros">Libros</option>
+            <option value="otros">Otros</option>
+        </select>
+        <input type="number" name="owner_id" placeholder="ID del propietario" required>
+        <button type="submit">Agregar Producto</button>
+    </form>
+
+    <h2>Productos existentes</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Categoría</th>
+                <th>Estado</th>
+                <th>Propietario (ID)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in products %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>{{ p.name }}</td>
+                <td>{{ p.description or "" }}</td>
+                <td>{{ p.category }}</td>
+                <td>{{ p.status }}</td>
+                <td>{{ p.owner_id }}</td>
+            </tr>
+            {% endfor %}
+            {% if products|length == 0 %}
+            <tr>
+                <td colspan="6" style="text-align:center;">No hay productos registrados.</td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+
+    <div style="margin-top:20px; text-align:center;">
+        <a href="/menu">⬅ Volver al menú principal</a>
+    </div>
+
+</div>
+</body>
+</html>
