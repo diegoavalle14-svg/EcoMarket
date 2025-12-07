@@ -1,6 +1,9 @@
 from passlib.context import CryptContext
 from fastapi import Request
-from app.database.connection import database
+from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi import Depends
+
+from app.database.connection import get_db
 from app.database.tables import users
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -24,27 +27,36 @@ class RequiresLogin(Exception):
     pass
 
 
-async def get_current_user(request: Request):
+async def get_current_user(request: Request, db: AsyncSession):
     username = request.cookies.get("user_name")
 
     if not username or username == "None":
         return None
 
     query = users.select().where(users.c.usuario == username)
-    user = await database.fetch_one(query)
+    result = await db.execute(query)
+    row = result.fetchone()
+    user = dict(row._mapping) if row else None
 
-    return user if user else None
+    return user
 
 
-async def require_login(request: Request):
-    user = await get_current_user(request)
+async def require_login(
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    user = await get_current_user(request, db)
     if not user:
         raise RequiresLogin()
     return user
 
 
-async def require_admin(request: Request):
-    user = await get_current_user(request)
+async def require_admin(
+    request: Request,
+    db: AsyncSession = Depends(get_db)
+):
+    user = await get_current_user(request, db)
     if not user or user["role"] != "admin":
         raise RequiresLogin()
     return user
+

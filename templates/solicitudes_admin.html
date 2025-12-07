@@ -162,6 +162,15 @@ body {
     background:#ef9a9a;
     transform:translateY(-1px);
 }
+/* Botón eliminar */
+.btn-chip-delete {
+    background:#f5e0e0;
+    color:#8e0000;
+}
+.btn-chip-delete:hover {
+    background:#f2bcbc;
+    transform:translateY(-1px);
+}
 
 /* Botón volver */
 .btn-back {
@@ -191,7 +200,7 @@ body {
 
 <div class="header">
   <h1>Admin - Solicitudes</h1>
-  <p>Revisa, aprueba o rechaza las solicitudes de los usuarios de EcoMarket</p>
+  <p>Revisa, aprueba, rechaza o elimina las solicitudes de los usuarios de EcoMarket</p>
 </div>
 
 <div class="admin-container">
@@ -244,7 +253,7 @@ function estadoChip(estadoRaw) {
 }
 
 async function cargarAdmin() {
-  const res = await fetch("/solicitudes/admin/all");
+  const res = await fetch("/solicitudes/admin");
   const tbody = document.getElementById("tablaAdmin");
 
   if (!res.ok) {
@@ -263,35 +272,51 @@ async function cargarAdmin() {
   tbody.innerHTML = data.map(s => `
     <tr>
       <td>${s.id}</td>
-      <td>${escapeHtml(s.email)}</td>
+      <td>${escapeHtml(s.email || '')}</td>
       <td>${escapeHtml(s.producto)}</td>
       <td>${s.cantidad}</td>
       <td>${escapeHtml(s.descripcion || '')}</td>
       <td>${escapeHtml(s.tipo || '')}</td>
       <td>${estadoChip(s.estado)}</td>
       <td>
-        <button class="btn-chip btn-chip-approve" onclick="cambiarEstado(${s.id},'aprobado')">Aprobar</button>
-        <button class="btn-chip btn-chip-reject" onclick="cambiarEstado(${s.id},'rechazado')">Rechazar</button>
+        <button class="btn-chip btn-chip-approve" onclick="cambiarEstado(${s.id},'aprobada')">Aprobar</button>
+        <button class="btn-chip btn-chip-reject" onclick="cambiarEstado(${s.id},'rechazada')">Rechazar</button>
+        <button class="btn-chip btn-chip-delete" onclick="eliminarSolicitud(${s.id})">Eliminar</button>
       </td>
     </tr>
   `).join('');
 }
 
 async function cambiarEstado(id, estado) {
-  const res = await fetch(`/solicitudes/admin/estado/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ estado }),
+  const res = await fetch(`/solicitudes/${id}?estado=${encodeURIComponent(estado)}`, {
+    method: "PUT"
   });
 
   if (res.ok) {
-    const data = await res.json().catch(() => null);
-    const nuevo = data?.nuevo_estado || estado;
-    mostrarMensajeAdmin(`Solicitud ${id} actualizada a ${String(nuevo).toUpperCase()}.`);
+    mostrarMensajeAdmin(`Solicitud ${id} actualizada a ${String(estado).toUpperCase()}.`);
     await cargarAdmin();
   } else {
     const txt = await res.text().catch(() => "");
     mostrarMensajeAdmin("Error al actualizar solicitud " + id + ": " + (txt || `status ${res.status}`), true);
+  }
+}
+
+async function eliminarSolicitud(id) {
+  if (!confirm(`¿Seguro que deseas eliminar la solicitud ${id}?`)) {
+    return;
+  }
+
+  const res = await fetch(`/solicitudes/${id}`, {
+    method: "DELETE"
+  });
+
+  if (res.ok) {
+    const data = await res.json().catch(() => ({}));
+    mostrarMensajeAdmin(data.message || `Solicitud ${id} eliminada correctamente.`);
+    await cargarAdmin();
+  } else {
+    const txt = await res.text().catch(() => "");
+    mostrarMensajeAdmin("Error al eliminar solicitud " + id + ": " + (txt || `status ${res.status}`), true);
   }
 }
 
@@ -301,7 +326,7 @@ function escapeHtml(str) {
     '<': '&lt;',
     '>': '&gt;',
     '"': '&quot;',
-    "'": '&#39;',
+    "'": ''
   }[m]));
 }
 
@@ -310,3 +335,4 @@ cargarAdmin();
 
 </body>
 </html>
+

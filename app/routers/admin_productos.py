@@ -1,6 +1,9 @@
 # admin_products.py
 from fastapi import APIRouter, Depends, HTTPException
-from app.database.connection import database
+from sqlalchemy import select, text
+from sqlalchemy.ext.asyncio import AsyncSession
+from app.database.connection import get_db
+from app.database.tables import products
 from app.utils.security import require_admin
 from pydantic import BaseModel
 from typing import Optional
@@ -24,95 +27,111 @@ class ProductBase(BaseModel):
 #  GET - todos
 # -----------------------
 @router.get("/all")
-async def get_all_products(user=Depends(require_admin)):
-    query = "SELECT * FROM products"
-    productos = await database.fetch_all(query)
-    return productos
+async def get_all_products(user=Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    try:
+        query = select(products)
+        result = await db.execute(query)
+        rows = result.fetchall()
+        return [dict(row._mapping) for row in rows]
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # -----------------------
 #  GET - individual
 # -----------------------
 @router.get("/{id}")
-async def get_product(id: int, user=Depends(require_admin)):
-    query = "SELECT * FROM products WHERE id = :id"
-    producto = await database.fetch_one(query, values={"id": id})
-    if not producto:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
-    return producto
+async def get_product(id: int, user=Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    try:
+        query = select(products).where(products.c.id == id)
+        result = await db.execute(query)
+        producto = result.fetchone()
+        if not producto:
+            raise HTTPException(status_code=404, detail="Producto no encontrado")
+        return dict(producto._mapping)
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # -----------------------
 #  POST - crear
 # -----------------------
 @router.post("/create")
-async def create_product(data: ProductBase, user=Depends(require_admin)):
-
-    query = """
-        INSERT INTO products (name, description, category, price, stock, status, image_url)
-        VALUES (:name, :description, :category, :price, :stock, :status, :image_url)
-    """
-
-    new_id = await database.execute(query, data.dict())
-
-    return {
-        "msg": "Producto creado",
-        "id": new_id
-    }
+async def create_product(data: ProductBase, user=Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    try:
+        query = products.insert().values(
+            name=data.name,
+            description=data.description,
+            category=data.category,
+            price=data.price,
+            stock=data.stock,
+            status=data.status,
+            image_url=data.image_url
+        )
+        result = await db.execute(query)
+        await db.commit()
+        return {
+            "msg": "Producto creado",
+            "id": result.lastrowid
+        }
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # -----------------------
 #  PUT - actualizar
 # -----------------------
 @router.put("/{id}")
-async def update_product(id: int, data: ProductBase, user=Depends(require_admin)):
+async def update_product(id: int, data: ProductBase, user=Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    try:
+        # Verificar que exista
+        check_query = select(products).where(products.c.id == id)
+        check_result = await db.execute(check_query)
+        existing = check_result.fetchone()
+        
+        if not existing:
+            raise HTTPException(status_code=404, detail="Producto no encontrado")
 
-    # Verificar que exista
-    existing = await database.fetch_one(
-        "SELECT * FROM products WHERE id = :id",
-        values={"id": id}
-    )
-    if not existing:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
+        # Actualizar
+        update_query = products.update().where(products.c.id == id).values(
+            name=data.name,
+            description=data.description,
+            category=data.category,
+            price=data.price,
+            stock=data.stock,
+            status=data.status,
+            image_url=data.image_url
+        )
+        await db.execute(update_query)
+        await db.commit()
 
-    query = """
-        UPDATE products
-        SET 
-            name = :name,
-            description = :description,
-            category = :category,
-            price = :price,
-            stock = :stock,
-            status = :status,
-            image_url = :image_url
-        WHERE id = :id
-    """
-
-    values = data.dict()
-    values["id"] = id
-
-    await database.execute(query, values)
-
-    return {"msg": "Producto actualizado"}
+        return {"msg": "Producto actualizado"}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 # -----------------------
 #  DELETE - eliminar
 # -----------------------
 @router.delete("/{id}")
-async def delete_product(id: int, user=Depends(require_admin)):
+async def delete_product(id: int, user=Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    try:
+        # Verificar que exista
+        check_query = select(products).where(products.c.id == id)
+        check_result = await db.execute(check_query)
+        existing = check_result.fetchone()
 
-    existing = await database.fetch_one(
-        "SELECT * FROM products WHERE id = :id",
-        values={"id": id}
-    )
+        if not existing:
+            raise HTTPException(status_code=404, detail="Producto no encontrado")
 
-    if not existing:
-        raise HTTPException(status_code=404, detail="Producto no encontrado")
+        # Eliminar
+        delete_query = products.delete().where(products.c.id == id)
+        await db.execute(delete_query)
+        await db.commit()
 
-    await database.execute(
-        "DELETE FROM products WHERE id = :id",
-        values={"id": id}
-    )
-
-    return {"msg": "Producto eliminado"}
+        return {"msg": "Producto eliminado"}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))

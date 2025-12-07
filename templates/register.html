@@ -15,15 +15,17 @@
 <div style="
   display:flex;
   justify-content:center;
-  align-items:center;
+  align-items:flex-start;
+  gap:24px;
   padding:40px 20px 60px;
 ">
+  <!-- CARD del formulario -->
   <div style="
-      background:#ffffff;
+      background:#111a10;
       border-radius:24px;
       padding:36px 32px 30px;
       width:100%;
-      max-width:480px;
+      max-width:580px;
       box-shadow:0 10px 25px rgba(76,175,80,0.2);
       display:flex;
       flex-direction:column;
@@ -33,117 +35,139 @@
       Registrarse
     </h2>
 
+    {% if error %}
+      <div style="margin-top:8px;margin-bottom:10px;padding:10px;border-radius:8px;
+                  background:#ffebee;color:#b71c1c;font-size:0.9rem;text-align:center;">
+        {{ error }}
+      </div>
+    {% endif %}
+
     <form id="registerForm"
-          action="/auth/register-form"
+          action="/auth/register"
           method="POST"
           style="display:flex;flex-direction:column;gap:14px;">
 
       <div style="display:flex;flex-direction:column;gap:6px;">
-        <label for="fullname"
-               style="color:#2e7d32;font-weight:600;font-size:0.95rem;">
+        <label for="nombre_completo"
+               style="color:#e8f5e9;font-weight:600;font-size:0.95rem;">
           Nombre Completo
         </label>
         <input
           type="text"
-          id="fullname"
-          name="fullname"
+          id="nombre_completo"
+          name="nombre_completo"
+          minlength="3"
+          pattern="[A-Za-zÁÉÍÓÚáéíóúÑñ ]+"
           placeholder="Ingresa tu nombre completo"
           required
           style="
             width:100%;
             padding:12px 14px;
-            border:2px solid #c8e6c9;
+            border:2px solid #1b5e20;
             border-radius:12px;
             font-size:0.95rem;
-            background-color:#f9fff9;
+            background-color:#0b260b;
+            color:#e8f5e9;
             box-sizing:border-box;
           ">
       </div>
 
       <div style="display:flex;flex-direction:column;gap:6px;">
         <label for="username"
-               style="color:#2e7d32;font-weight:600;font-size:0.95rem;">
+               style="color:#e8f5e9;font-weight:600;font-size:0.95rem;">
           Nombre de Usuario
         </label>
         <input
           type="text"
           id="username"
           name="username"
+          minlength="3"
+          maxlength="20"
+          pattern="[A-Za-z0-9_]+"
           placeholder="Elige un nombre de usuario"
           required
           style="
             width:100%;
             padding:12px 14px;
-            border:2px solid #c8e6c9;
+            border:2px solid #1b5e20;
             border-radius:12px;
             font-size:0.95rem;
-            background-color:#f9fff9;
+            background-color:#0b260b;
+            color:#e8f5e9;
             box-sizing:border-box;
           ">
       </div>
 
       <div style="display:flex;flex-direction:column;gap:6px;">
         <label for="email"
-               style="color:#2e7d32;font-weight:600;font-size:0.95rem;">
+               style="color:#e8f5e9;font-weight:600;font-size:0.95rem;">
           Correo Electrónico
         </label>
         <input
           type="email"
           id="email"
           name="email"
+          maxlength="254"
           placeholder="Ingresa tu correo electrónico"
           required
           style="
             width:100%;
             padding:12px 14px;
-            border:2px solid #c8e6c9;
+            border:2px solid #1b5e20;
             border-radius:12px;
             font-size:0.95rem;
-            background-color:#f9fff9;
+            background-color:#0b260b;
+            color:#e8f5e9;
             box-sizing:border-box;
           ">
       </div>
 
       <div style="display:flex;flex-direction:column;gap:6px;">
         <label for="password"
-               style="color:#2e7d32;font-weight:600;font-size:0.95rem;">
+               style="color:#e8f5e9;font-weight:600;font-size:0.95rem;">
           Contraseña
         </label>
         <input
           type="password"
           id="password"
           name="password"
+          minlength="10"
+          maxlength="64"
           placeholder="Crea una contraseña"
           required
           style="
             width:100%;
             padding:12px 14px;
-            border:2px solid #c8e6c9;
+            border:2px solid #1b5e20;
             border-radius:12px;
             font-size:0.95rem;
-            background-color:#f9fff9;
+            background-color:#0b260b;
+            color:#e8f5e9;
             box-sizing:border-box;
           ">
       </div>
 
       <div style="display:flex;flex-direction:column;gap:6px;">
         <label for="confirmPassword"
-               style="color:#2e7d32;font-weight:600;font-size:0.95rem;">
+               style="color:#e8f5e9;font-weight:600;font-size:0.95rem;">
           Confirmar Contraseña
         </label>
         <input
           type="password"
           id="confirmPassword"
           name="confirmPassword"
+          minlength="10"
+          maxlength="64"
           placeholder="Confirma tu contraseña"
           required
           style="
             width:100%;
             padding:12px 14px;
-            border:2px solid #c8e6c9;
+            border:2px solid #1b5e20;
             border-radius:12px;
             font-size:0.95rem;
-            background-color:#f9fff9;
+            background-color:#0b260b;
+            color:#e8f5e9;
             box-sizing:border-box;
           ">
       </div>
@@ -165,10 +189,10 @@
       </button>
     </form>
 
-    <div style="text-align:center;font-size:0.9rem;color:#555;margin-top:4px;">
+    <div style="text-align:center;font-size:0.9rem;color:#e0e0e0;margin-top:4px;">
       <p style="margin:0;">
         ¿Ya tienes cuenta?
-        <a href="/auth/login" style="color:#43a047;font-weight:600;">Inicia sesión aquí</a>
+        <a href="/auth/login" style="color:#81c784;font-weight:600;">Inicia sesión aquí</a>
       </p>
     </div>
 
@@ -189,6 +213,30 @@
       Volver al Menú Principal
     </button>
   </div>
+
+  <!-- BLOQUE de requisitos, fuera del card -->
+  <aside style="
+      width:260px;
+      font-size:0.9rem;
+      color:#e8f5e9;
+      background:#284d1e;
+      border-radius:16px;
+      padding:14px 16px;
+      border:1px solid #4caf50;
+  ">
+    <h3 style="margin:0 0 8px;font-size:1rem;color:#c5e1a5;">
+      Requisitos para registrarse
+    </h3>
+    <ul style="margin:0;padding-left:18px;line-height:1.5;">
+      <li>Nombre completo de al menos 3 caracteres (solo letras y espacios).</li>
+      <li>Nombre de usuario entre 3 y 20 caracteres, solo letras, números y guion bajo.</li>
+      <li>Correo electrónico con formato válido y no registrado previamente.</li>
+      <li>Contraseña entre 10 y 64 caracteres.</li>
+      <li>La contraseña debe incluir al menos una letra y un número.</li>
+      <li>Confirmar la contraseña con el mismo valor.</li>
+    </ul>
+  </aside>
 </div>
 
 {% endblock %}
+

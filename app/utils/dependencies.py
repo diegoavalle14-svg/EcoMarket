@@ -1,6 +1,6 @@
 from fastapi import Request, HTTPException, Depends
 from fastapi.responses import RedirectResponse
-from app.database.connection import database
+from app.database.connection import SessionLocal
 from app.database.tables import users
 
 

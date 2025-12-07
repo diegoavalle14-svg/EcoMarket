@@ -1,6 +1,8 @@
 from datetime import datetime
-from sqlalchemy import DateTime, Float, Table, Column, Integer, String, ForeignKey
-from .connection import metadata
+from sqlalchemy import DateTime, Float, Table, Column, Integer, String, ForeignKey, Boolean, MetaData
+
+# Crear metadata aquí directamente
+metadata = MetaData()
 
 users = Table(
     "users",
@@ -56,8 +58,7 @@ solicitudes = Table(
     Column("producto", String(255), nullable=False),
     Column("cantidad", Integer, nullable=False),
     Column("descripcion", String(255), nullable=True),
-    Column("estado", String(50), default="pendiente"),  # igual que en la BD
-    # columna fecha eliminada para coincidir con la tabla real
+    Column("estado", String(50), default="pendiente"),
     Column("tipo", String(20), nullable=False),
 )
 
@@ -70,9 +71,6 @@ points = Table(
     Column("lat", Float),
     Column("lng", Float),
 )
-
-from datetime import datetime
-from sqlalchemy import DateTime, Boolean  # si aún no los tienes importados
 
 user_points = Table(
     "user_points",
@@ -99,9 +97,9 @@ points_history = Table(
     metadata,
     Column("id", Integer, primary_key=True),
     Column("user_id", Integer, ForeignKey("users.id"), nullable=False),
-    Column("cambio", Integer, nullable=False),  # positivo = gana; negativo = canjea
+    Column("cambio", Integer, nullable=False),
     Column("motivo", String(150), nullable=False),
-    Column("referencia", String(100)),          # id de solicitud, etc. opcional
+    Column("referencia", String(100)),
     Column("fecha", DateTime, default=datetime.utcnow),
 )
 

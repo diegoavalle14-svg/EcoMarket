@@ -8,7 +8,7 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { font-family: 'Poppins', Arial, sans-serif; background: linear-gradient(135deg,#e8f5e9,#c8e6c9); color:#2e7d32; height:100vh; display:flex; flex-direction:column; }
+body { font-family: 'Poppins', Arial, sans-serif; background: linear-gradient(135deg,#e8f5e9,#c8e6c9); color:#2e7d32; }
 
 .header { text-align:center; background: linear-gradient(90deg,#165c19,#43a047); color:white; padding:20px; border-radius: 0 0 20px 20px; box-shadow:0 5px 15px rgba(0,0,0,0.25);}
 .header h1 { font-size:3em; font-weight:800; text-shadow:2px 3px 6px rgba(0,0,0,0.25);}
@@ -16,115 +16,291 @@ body { font-family: 'Poppins', Arial, sans-serif; background: linear-gradient(13
 .header .btn-back { display:inline-block; margin-top:10px; padding:10px 16px; background:linear-gradient(90deg,#43a047,#66bb6a); color:white; text-decoration:none; font-weight:600; border-radius:14px;}
 .header .btn-back:hover { background:linear-gradient(90deg,#388e3c,#43a047); }
 
-.main-content { flex:1; display:flex; height:calc(100% - 100px); } /* resto de altura para el contenido */
+.container { max-width:1200px; margin:20px auto; padding:0 20px; }
+
+.tabs { display:flex; gap:10px; margin-bottom:20px; }
+.tab-btn { padding:10px 20px; background:white; border:2px solid #c8e6c9; border-radius:8px; cursor:pointer; font-weight:600; transition:all 0.3s; }
+.tab-btn.active { background:#43a047; color:white; border-color:#43a047; }
+.tab-btn:hover { background:#f0f0f0; }
+.tab-btn.active:hover { background:#388e3c; }
+
+.tab-content { display:none; }
+.tab-content.active { display:block; }
 
 .form-section {
-    width:350px;
     background:white;
     padding:20px;
-    border-radius:20px;
-    box-shadow:0 10px 25px rgba(76,175,80,0.2);
-    margin:20px;
-    overflow-y:auto;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(76,175,80,0.2);
+    margin-bottom:20px;
 }
 
-#map {
-    flex:1;
-    height:100%;
-    margin:20px 20px 20px 0;
-    border-radius:15px;
-}
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px; }
+@media(max-width:600px) { .form-grid { grid-template-columns:1fr; } }
 
 h2 { color:#2e7d32; margin-bottom:15px; font-size:1.4em; }
 .form-group { margin-bottom:12px; }
 label { display:block; margin-bottom:5px; font-weight:600; }
-input { width:100%; padding:8px; border-radius:8px; border:2px solid #c8e6c9; font-size:1em;}
+input { width:100%; padding:10px; border-radius:8px; border:2px solid #c8e6c9; font-size:1em;}
 input:focus { outline:none; border-color:#43a047; }
 
-.btn { padding:10px; border:none; border-radius:10px; font-weight:600; cursor:pointer; transition: all 0.3s; }
+.btn { padding:10px 16px; border:none; border-radius:8px; font-weight:600; cursor:pointer; transition: all 0.3s; font-size:0.9em; }
 .btn-primary { background: linear-gradient(90deg,#43a047,#66bb6a); color:white; }
 .btn-primary:hover { background: linear-gradient(90deg,#388e3c,#43a047); }
 .btn-secondary { background:#6c757d; color:white; }
 .btn-secondary:hover { background:#5a6268; }
+.btn-edit { background:#0d6efd; color:white; }
+.btn-edit:hover { background:#0b5ed7; }
+.btn-delete { background:#dc3545; color:white; }
+.btn-delete:hover { background:#bb2d3b; }
 
-.alert { padding:10px; border-radius:8px; margin-bottom:10px; display:none; }
+.btn-group { display:flex; gap:10px; }
+
+.alert { padding:12px; border-radius:8px; margin-bottom:15px; display:none; }
 .alert-success { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
 .alert-error { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; }
 
-@media(max-width:900px){
-    .main-content { flex-direction:column; }
-    .form-section { width:100%; margin:10px; }
-    #map { margin:10px; height:300px; }
+.table-scroll { overflow-x:auto; }
+table { width:100%; border-collapse:collapse; background:white; border-radius:10px; overflow:hidden; }
+th { background:#43a047; color:white; padding:12px; text-align:left; font-weight:600; }
+td { padding:12px; border-bottom:1px solid #e0e0e0; }
+tr:hover { background:#f9f9f9; }
+
+#map {
+    width:100%;
+    height:400px;
+    border-radius:15px;
+    box-shadow:0 5px 15px rgba(76,175,80,0.2);
+    margin-top:20px;
 }
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.active { display: flex; }
+
+.modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 500px;
+    width: 90%;
+}
+
+.modal-close { float:right; cursor:pointer; font-size:1.5em; }
 </style>
 </head>
 <body>
 
 <div class="header">
-    <h1>EcoMarket</h1>
+    <h1> EcoMarket</h1>
     <p>Puntos de Recolección</p>
-    <a class="btn-back" href="/menu"> Volver al Menú Principal</a>
+    <a class="btn-back" href="/menu">← Volver al Menú</a>
 </div>
 
-<div class="main-content">
-    <div class="form-section">
-        <h2 id="form-title">➕ Nuevo Punto de Recolección</h2>
-        <div class="alert alert-success" id="success-alert"></div>
-        <div class="alert alert-error" id="error-alert"></div>
-
-        <form id="point-form">
-            <input type="hidden" id="point-id">
-            <div class="form-group">
-                <label for="nombre">Nombre *</label>
-                <input type="text" id="nombre" required>
-            </div>
-            <div class="form-group">
-                <label for="direccion">Dirección *</label>
-                <input type="text" id="direccion" required>
-            </div>
-            <div class="form-group">
-                <label for="lat">Latitud *</label>
-                <input type="text" id="lat" placeholder="Ej: 15.12345" required>
-            </div>
-            <div class="form-group">
-                <label for="lng">Longitud *</label>
-                <input type="text" id="lng" placeholder="Ej: -86.12345" required>
-            </div>
-            <div class="btn-group">
-                <button type="submit" class="btn btn-primary" id="submit-btn">Guardar</button>
-                <button type="button" class="btn btn-secondary" id="cancel-btn" style="display:none;">Cancelar</button>
-            </div>
-        </form>
+<div class="container">
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('form')">➕ Nuevo Punto</button>
+        <button class="tab-btn" onclick="switchTab('tabla')">📋 Ver Puntos</button>
+        <button class="tab-btn" onclick="switchTab('mapa')">🗺️ Mapa</button>
     </div>
 
-    <div id="map"></div>
+    <div id="alerts">
+        <div class="alert alert-success" id="success-alert"></div>
+        <div class="alert alert-error" id="error-alert"></div>
+    </div>
+
+    <!-- TAB 1: FORMULARIO -->
+    <div id="form" class="tab-content active">
+        <div class="form-section">
+            <h2 id="form-title">➕ Nuevo Punto de Recolección</h2>
+            <form id="point-form">
+                <input type="hidden" id="point-id">
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="nombre">Nombre *</label>
+                        <input type="text" id="nombre" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="direccion">Dirección *</label>
+                        <input type="text" id="direccion" required>
+                    </div>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="lat">Latitud *</label>
+                        <input type="text" id="lat" placeholder="Ej: 15.12345" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lng">Longitud *</label>
+                        <input type="text" id="lng" placeholder="Ej: -86.12345" required>
+                    </div>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary" id="submit-btn">💾 Guardar</button>
+                    <button type="button" class="btn btn-secondary" id="cancel-btn" style="display:none;">❌ Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- TAB 2: TABLA -->
+    <div id="tabla" class="tab-content">
+        <div class="form-section">
+            <h2>📋 Puntos de Recolección</h2>
+            <div class="table-scroll">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Dirección</th>
+                            <th>Coordenadas</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="points-table">
+                        <tr><td colspan="5" style="text-align:center; padding:20px;">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: MAPA -->
+    <div id="mapa" class="tab-content">
+        <div class="form-section">
+            <h2>🗺️ Ubicación de Puntos</h2>
+            <div id="map"></div>
+        </div>
+    </div>
 </div>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
-const API_URL = '/api/puntos'; // 🔴 Aquí apuntamos correctamente a la ruta del backend
+const API_URL = '/api/puntos';
 let editMode = false;
+let map = null;
+
+// Cambiar tabs
+function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    
+    document.getElementById(tab).classList.add('active');
+    event.target.classList.add('active');
+    
+    if (tab === 'mapa' && !map) initMap();
+}
+
+// Mostrar alertas
+function showAlert(message, isError = false) {
+    const alertBox = isError ? document.getElementById('error-alert') : document.getElementById('success-alert');
+    alertBox.textContent = message;
+    alertBox.style.display = 'block';
+    setTimeout(() => alertBox.style.display = 'none', 4000);
+}
 
 // Inicializar mapa
-const map = L.map('map').setView([15.0, -86.0], 7);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution:'&copy; OpenStreetMap contributors' }).addTo(map);
+function initMap() {
+    if (map) return;
+    map = L.map('map').setView([15.0, -86.0], 7);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', 
+        { attribution:'&copy; OpenStreetMap' }).addTo(map);
+    loadPointsOnMap();
+}
 
-// Cargar puntos desde API y agregar marcadores
-async function loadPoints(){
+// Cargar puntos en tabla
+async function loadPointsTable() {
     const res = await fetch(API_URL);
     const data = await res.json();
-    if(!data.points) return;
-    data.points.forEach(point=>{
-        if(point.lat && point.lng){
-            L.marker([point.lat, point.lng]).addTo(map)
-             .bindPopup(`<b>${point.nombre}</b><br>${point.direccion}`);
+    const tbody = document.getElementById('points-table');
+    
+    if (!data.points || data.points.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:20px;">No hay puntos registrados</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = data.points.map(p => `
+        <tr>
+            <td>${p.id}</td>
+            <td>${p.nombre}</td>
+            <td>${p.direccion}</td>
+            <td>(${parseFloat(p.lat).toFixed(4)}, ${parseFloat(p.lng).toFixed(4)})</td>
+            <td>
+                <div class="btn-group">
+                    <button class="btn btn-edit" onclick="editPoint(${p.id}, '${p.nombre}', '${p.direccion}', ${p.lat}, ${p.lng})">✏️ Editar</button>
+                    <button class="btn btn-delete" onclick="deletePoint(${p.id})">🗑️ Borrar</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+// Cargar puntos en mapa
+async function loadPointsOnMap() {
+    const res = await fetch(API_URL);
+    const data = await res.json();
+    if (!data.points) return;
+    
+    data.points.forEach(p => {
+        if (p.lat && p.lng) {
+            L.marker([p.lat, p.lng]).addTo(map)
+                .bindPopup(`<b>${p.nombre}</b><br>${p.direccion}`);
         }
     });
 }
-loadPoints();
+
+// Editar punto
+function editPoint(id, nombre, direccion, lat, lng) {
+    document.getElementById('point-id').value = id;
+    document.getElementById('nombre').value = nombre;
+    document.getElementById('direccion').value = direccion;
+    document.getElementById('lat').value = lat;
+    document.getElementById('lng').value = lng;
+    document.getElementById('form-title').textContent = '✏️ Editar Punto de Recolección';
+    document.getElementById('submit-btn').textContent = '💾 Actualizar';
+    document.getElementById('cancel-btn').style.display = 'inline-block';
+    editMode = true;
+    switchTab('form');
+}
+
+// Borrar punto
+async function deletePoint(id) {
+    if (!confirm('¿Estás seguro de que deseas borrar este punto?')) return;
+    
+    try {
+        const res = await fetch(`${API_URL}/puntos/${id}`, { method: 'DELETE' });
+        if (res.ok) {
+            showAlert('✅ Punto eliminado correctamente');
+            loadPointsTable();
+            if (map) {
+                map.remove();
+                map = null;
+            }
+        } else {
+            showAlert('❌ Error al eliminar punto', true);
+        }
+    } catch (err) {
+        showAlert('❌ Error en la conexión', true);
+    }
+}
 
 // Enviar formulario
-document.getElementById('point-form').addEventListener('submit', async (e)=>{
+document.getElementById('point-form').addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = document.getElementById('point-id').value;
     const nombre = document.getElementById('nombre').value;
@@ -138,26 +314,53 @@ document.getElementById('point-form').addEventListener('submit', async (e)=>{
     formData.append('lat', lat);
     formData.append('lng', lng);
 
-    try{
-        let url = API_URL, method='POST';
-        if(editMode){ url=`${API_URL}/${id}`; method='PUT'; }
+    try {
+        let url = API_URL;  // ✅ Correcto: usa /api/puntos directo
+        let method = 'POST';
+        
+        if (editMode) {
+            url = `${API_URL}/${id}`; // ✅ Correcto: /api/puntos/123
+            method = 'PUT';
+        }
+         
 
         const res = await fetch(url, { method, body: formData });
-        if(res.ok){ 
-            alert(editMode ? 'Punto actualizado' : 'Punto agregado'); 
-            location.reload(); 
-        } else { 
-            const data = await res.json(); 
-            alert(data.detail || 'Error al guardar'); 
+        
+        if (res.ok) {
+            showAlert(editMode ? '✅ Punto actualizado correctamente' : '✅ Punto creado correctamente');
+            document.getElementById('point-form').reset();
+            document.getElementById('point-id').value = '';
+            document.getElementById('form-title').textContent = '➕ Nuevo Punto de Recolección';
+            document.getElementById('submit-btn').textContent = '💾 Guardar';
+            document.getElementById('cancel-btn').style.display = 'none';
+            editMode = false;
+            loadPointsTable();
+            if (map) {
+                map.remove();
+                map = null;
+            }
+        } else {
+            const data = await res.json();
+            showAlert(data.detail || '❌ Error al guardar', true);
         }
-    } catch(err){ 
-        alert('Error en la conexión'); 
+    } catch (err) {
+        showAlert('❌ Error en la conexión', true);
     }
 });
 
 // Cancelar edición
-document.getElementById('cancel-btn').addEventListener('click', ()=>{
+document.getElementById('cancel-btn').addEventListener('click', () => {
     document.getElementById('point-form').reset();
-    editMode=false;
+    document.getElementById('point-id').value = '';
+    document.getElementById('form-title').textContent = '➕ Nuevo Punto de Recolección';
+    document.getElementById('submit-btn').textContent = '💾 Guardar';
+    document.getElementById('cancel-btn').style.display = 'none';
+    editMode = false;
 });
+
+// Cargar puntos al iniciar
+loadPointsTable();
 </script>
+
+</body>
+</html>

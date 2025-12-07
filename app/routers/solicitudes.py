@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy import select, update, delete
+from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
-from app.database.connection import database
+from app.database.connection import get_db
 from app.database.tables import solicitudes, users
 from app.utils.security import require_login, require_admin
 from app.utils.points import add_points
@@ -13,121 +15,144 @@ class SolicitudCreate(BaseModel):
     producto: str
     cantidad: int
     descripcion: str | None = None
-    tipo: str  # donar, intercambiar, comprar
+    tipo: str | None = None
 
 
-# -----------------------
-# GET mis solicitudes
-# -----------------------
+# GET mis solicitudes (usuario logueado)
 @router.get("/mis-solicitudes")
-async def mis_solicitudes(user=Depends(require_login)):
-    query = """
-        SELECT id, producto, cantidad, descripcion, tipo, estado
-        FROM solicitudes
-        WHERE user_id = :user_id
-        ORDER BY id DESC
-    """
-    result = await database.fetch_all(query, values={"user_id": user["id"]})
-    return result
+async def mis_solicitudes(user=Depends(require_login), db: AsyncSession = Depends(get_db)):
+    try:
+        query = select(solicitudes).where(solicitudes.c.user_id == user["id"])
+        result = await db.execute(query)
+        rows = result.fetchall()
+        return [dict(row._mapping) for row in rows]
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 
-# -----------------------
-# POST crear solicitud (+5 puntos)
-# -----------------------
+# POST crear solicitud (usuario logueado)
 @router.post("/crear")
 async def crear_solicitud(
-    solicitud_data: SolicitudCreate,
+    solicitud: SolicitudCreate,
     user=Depends(require_login),
+    db: AsyncSession = Depends(get_db)
 ):
-    if solicitud_data.cantidad <= 0:
-        raise HTTPException(status_code=400, detail="La cantidad debe ser mayor que cero.")
-
-    if solicitud_data.tipo not in ["donar", "intercambiar", "comprar"]:
-        raise HTTPException(status_code=400, detail="Tipo inválido.")
-
-    # Insertar solicitud y obtener id
-    solicitud_id = await database.execute(
-        solicitudes.insert().values(
+    try:
+        new_solicitud = solicitudes.insert().values(
             user_id=user["id"],
-            producto=solicitud_data.producto,
-            cantidad=solicitud_data.cantidad,
-            descripcion=solicitud_data.descripcion,
-            tipo=solicitud_data.tipo,
-            estado="pendiente",
+            producto=solicitud.producto,
+            cantidad=solicitud.cantidad,
+            descripcion=solicitud.descripcion,
+            tipo=solicitud.tipo or "donar",
+            estado="pendiente"
         )
-    )
-
-    # ➕ Puntos por crear solicitud (+5 puntos)
-    await add_points(user["id"], 5, "Creación de solicitud", str(solicitud_id))
-
-    return {
-        "message": "Solicitud enviada",
-        "solicitud_id": solicitud_id,
-        "puntos_ganados": 5
-    }
+        await db.execute(new_solicitud)
+        await db.commit()
+        return {"message": "Solicitud creada exitosamente", "status": "pendiente"}
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(status_code=400, detail=str(e))
 
 
-# -----------------------
-# ADMIN - listar solicitudes
-# -----------------------
-@router.get("/admin/all")
-async def todas_solicitudes_admin(admin=Depends(require_admin)):
-    query = """
-        SELECT s.id, u.email, s.producto, s.cantidad, s.descripcion, s.tipo, s.estado
-        FROM solicitudes s
-        JOIN users u ON u.id = s.user_id
-        ORDER BY s.id DESC
-    """
-    return await database.fetch_all(query)
-
-
-# -----------------------
-# ADMIN - cambiar estado (+10 puntos si se aprueba)
-# -----------------------
-@router.put("/admin/estado/{id}")
-async def cambiar_estado(id: int, data: dict, admin=Depends(require_admin)):
-    nuevo_estado = data.get("estado")
-    if nuevo_estado not in ["pendiente", "aprobado", "rechazado"]:
-        raise HTTPException(status_code=400, detail="Estado inválido")
-
-    # Obtener solicitud actual (con user_id y estado anterior)
-    solicitud_actual = await database.fetch_one(
-        solicitudes.select().where(solicitudes.c.id == id)
-    )
-    if not solicitud_actual:
-        raise HTTPException(status_code=404, detail="Solicitud no encontrada")
-
-    # Obtener email del usuario
-    q_user = """
-        SELECT u.email
-        FROM solicitudes s
-        JOIN users u ON s.user_id = u.id
-        WHERE s.id = :id
-    """
-    result = await database.fetch_one(q_user, {"id": id})
-    if not result:
-        raise HTTPException(status_code=404, detail="Solicitud no encontrada")
-
-    # Cambiar estado
-    await database.execute(
-        solicitudes.update().where(solicitudes.c.id == id).values(estado=nuevo_estado)
-    )
-
-    # ➕ Puntos solo si se APRUEBA (y no estaba aprobada antes)
-    puntos_ganados = 0
-    if nuevo_estado == "aprobado" and solicitud_actual["estado"] != "aprobado":
-        await add_points(
-            solicitud_actual["user_id"],
-            10,
-            "Solicitud aprobada",
-            str(id)
+# GET todas las solicitudes (solo admin)
+@router.get("/admin")
+async def get_all_solicitudes(user=Depends(require_admin), db: AsyncSession = Depends(get_db)):
+    try:
+        query = (
+            select(
+                solicitudes.c.id,
+                solicitudes.c.producto,
+                solicitudes.c.cantidad,
+                solicitudes.c.descripcion,
+                solicitudes.c.tipo,
+                solicitudes.c.estado,
+                users.c.email,
+            )
+            .select_from(solicitudes.join(users, solicitudes.c.user_id == users.c.id))
+            .order_by(solicitudes.c.id.desc())
         )
-        puntos_ganados = 10
+        result = await db.execute(query)
+        rows = result.fetchall()
+        return [dict(row._mapping) for row in rows]
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
-    return {
-        "message": "Estado actualizado",
-        "solicitud_id": id,
-        "nuevo_estado": nuevo_estado,
-        "puntos_ganados": puntos_ganados,
-        "usuario_email": result["email"]
-    }
+
+# PUT actualizar estado de solicitud (solo admin)
+@router.put("/{solicitud_id}")
+async def actualizar_solicitud(
+    solicitud_id: int,
+    estado: str,
+    user = Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        # Obtener solicitud
+        query = select(solicitudes).where(solicitudes.c.id == solicitud_id)
+        result = await db.execute(query)
+        solicitud = result.fetchone()
+
+        if not solicitud:
+            raise HTTPException(status_code=404, detail="Solicitud no encontrada")
+
+        # Actualizar estado
+        update_query = (
+            solicitudes
+            .update()
+            .where(solicitudes.c.id == solicitud_id)
+            .values(estado=estado)
+        )
+
+        await db.execute(update_query)
+
+        # Si fue aprobada, agregar puntos al usuario
+        if estado == "aprobada":
+            data = dict(solicitud._mapping)
+            await add_points(
+                db,
+                data["user_id"],
+                10,
+                "Solicitud aprobada",
+                referencia=str(solicitud_id)
+            )
+
+        await db.commit()
+
+        return {"message": f"Solicitud actualizada a {estado}"}
+    except Exception as e:
+        await db.rollback()
+        print("ERROR actualizar_solicitud:", e)
+        raise HTTPException(status_code=400, detail=str(e))
+
+
+# DELETE solicitud (solo admin)
+
+@router.delete("/{solicitud_id}")
+async def eliminar_solicitud(
+    solicitud_id: int,
+    user = Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    try:
+        # Verificar que la solicitud exista
+        query = select(solicitudes).where(solicitudes.c.id == solicitud_id)
+        result = await db.execute(query)
+        solicitud = result.fetchone()
+
+        if not solicitud:
+            raise HTTPException(status_code=404, detail="Solicitud no encontrada")
+
+        # Eliminar la solicitud
+        stmt = (
+            delete(solicitudes)
+            .where(solicitudes.c.id == solicitud_id)
+        )
+        await db.execute(stmt)
+        await db.commit()
+
+        return {"message": f"Solicitud {solicitud_id} eliminada correctamente"}
+    except Exception as e:
+        await db.rollback()
+        print("ERROR eliminar_solicitud:", e)
+        raise HTTPException(status_code=400, detail=str(e))
+

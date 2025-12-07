@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Request, Form, HTTPException, Depends
 from fastapi.responses import RedirectResponse, HTMLResponse
 from fastapi.templating import Jinja2Templates
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.connection import database
+from app.database.connection import SessionLocal, get_db
 from app.database.tables import users
 from app.utils.security import require_admin, hash_password
 from app.utils.points import add_points
@@ -25,19 +26,23 @@ async def register_form(
     username: str = Form(...),
     email: str = Form(...),
     password: str = Form(...),
-    confirmPassword: str = Form(...)
+    confirmPassword: str = Form(...),
+    db: AsyncSession = Depends(get_db)  # ✅ AQUÍ: inyectar la sesión
 ):
     if password != confirmPassword:
         raise HTTPException(status_code=400, detail="Las contraseñas no coinciden")
 
     # Validar duplicados
-    if await database.fetch_one(users.select().where(users.c.usuario == username)):
+    existing_user = await db.execute(users.select().where(users.c.usuario == username))
+    if existing_user.fetchone():
         raise HTTPException(status_code=400, detail="Usuario ya existe")
-    if await database.fetch_one(users.select().where(users.c.email == email)):
+    
+    existing_email = await db.execute(users.select().where(users.c.email == email))
+    if existing_email.fetchone():
         raise HTTPException(status_code=400, detail="Correo ya registrado")
 
     # Guardar usuario y obtener id
-    user_id = await database.execute(
+    result = await db.execute(
         users.insert().values(
             nombre_completo=fullname,
             usuario=username,
@@ -46,9 +51,11 @@ async def register_form(
             role="user",
         )
     )
+    await db.commit()
+    user_id = result.lastrowid
 
     # ➕ Puntos por registro
-    await add_points(user_id, 20, "Registro de cuenta", "registro")
+    await add_points(db, user_id, 20, "Registro de cuenta", "registro")
 
     return RedirectResponse(url="/auth/login", status_code=303)
 
@@ -56,10 +63,13 @@ async def register_form(
 # ====== ADMIN: CRUD USUARIOS ======
 
 @router.get("/admin/users")
-async def admin_list_users(admin=Depends(require_admin)):
+async def admin_list_users(
+    admin=Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
+):
     query = users.select().order_by(users.c.id.desc())
-    result = await database.fetch_all(query)
-    return [dict(r) for r in result]
+    result = await db.execute(query)
+    return [dict(r._mapping) for r in result.fetchall()]
 
 
 @router.post("/admin/users")
@@ -71,14 +81,18 @@ async def admin_create_user(
     password: str = Form(...),
     role: str = Form(...),
     admin=Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
 ):
     # Validar duplicados
-    if await database.fetch_one(users.select().where(users.c.usuario == usuario)):
+    existing_user = await db.execute(users.select().where(users.c.usuario == usuario))
+    if existing_user.fetchone():
         raise HTTPException(status_code=400, detail="Usuario ya existe")
-    if await database.fetch_one(users.select().where(users.c.email == email)):
+    
+    existing_email = await db.execute(users.select().where(users.c.email == email))
+    if existing_email.fetchone():
         raise HTTPException(status_code=400, detail="Correo ya registrado")
 
-    await database.execute(
+    await db.execute(
         users.insert().values(
             nombre_completo=nombre_completo,
             usuario=usuario,
@@ -87,6 +101,7 @@ async def admin_create_user(
             role=role,
         )
     )
+    await db.commit()
     return {"ok": True}
 
 
@@ -99,10 +114,11 @@ async def admin_update_user(
     role: str = Form(...),
     password: str = Form(""),
     admin=Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
 ):
     # Comprobar que existe
-    existing = await database.fetch_one(users.select().where(users.c.id == user_id))
-    if not existing:
+    existing = await db.execute(users.select().where(users.c.id == user_id))
+    if not existing.fetchone():
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
     valores = {
@@ -115,22 +131,32 @@ async def admin_update_user(
         valores["password"] = hash_password(password)
 
     # Validar duplicados (usuario/email de otros ids)
-    if await database.fetch_one(
+    dup_user = await db.execute(
         users.select().where(users.c.usuario == usuario, users.c.id != user_id)
-    ):
+    )
+    if dup_user.fetchone():
         raise HTTPException(status_code=400, detail="Usuario ya existe")
-    if await database.fetch_one(
+    
+    dup_email = await db.execute(
         users.select().where(users.c.email == email, users.c.id != user_id)
-    ):
+    )
+    if dup_email.fetchone():
         raise HTTPException(status_code=400, detail="Correo ya registrado")
 
-    await database.execute(
+    await db.execute(
         users.update().where(users.c.id == user_id).values(**valores)
     )
+    await db.commit()
     return {"ok": True}
 
 
 @router.delete("/admin/users/{user_id}")
-async def admin_delete_user(user_id: int, admin=Depends(require_admin)):
-    await database.execute(users.delete().where(users.c.id == user_id))
+async def admin_delete_user(
+    user_id: int,
+    admin=Depends(require_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    await db.execute(users.delete().where(users.c.id == user_id))
+    await db.commit()
     return {"ok": True}
+
