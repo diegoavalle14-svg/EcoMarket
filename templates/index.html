@@ -7,20 +7,20 @@
 <!-- HERO -->
 <section class="hero">
     <h2>EcoMarket</h2>
-    <p>La plataforma ecológica para compartir, reciclar y reducir el impacto ambiental.</p>
+    <p>La plataforma ecologica para compartir, reciclar y reducir el impacto ambiental.</p>
     {% if user %}
-    <p class="welcome-msg">Bienvenido a EcoMarket, <b>{{ user.nombre_completo }}</b></p>
+    <p class="welcome-msg">Bienvenido, <b>{{ user.nombre_completo }}</b></p>
     {% endif %}
 </section>
 
-<!-- CATEGORÍAS -->
+<!-- CATEGORIAS -->
 <section class="categories">
-    <h2>Categorías de Reciclaje</h2>
+    <h2>Categorias de Reciclaje</h2>
     <div class="category-grid">
         <div class="category-card">
-            <h3>Plásticos</h3>
+            <h3>Plasticos</h3>
             <a href="/products?category=Plásticos">
-                <img src="/static/images/plasticos.jpg" alt="Plásticos">
+                <img src="/static/images/plasticos.jpg" alt="Plasticos">
             </a>
         </div>
         <div class="category-card">
@@ -42,9 +42,9 @@
             </a>
         </div>
         <div class="category-card">
-            <h3>Electrónicos</h3>
+            <h3>Electronicos</h3>
             <a href="/products?category=Electrónicos">
-                <img src="/static/images/electronicos.jpg" alt="Electrónicos">
+                <img src="/static/images/electronicos.jpg" alt="Electronicos">
             </a>
         </div>
     </div>
@@ -63,12 +63,12 @@
             <div class="slide">
                 <img src="/static/images/reusar.jpg" alt="Reusa">
                 <h3>Reusa</h3>
-                <p>Extiende la vida útil de los productos evitando que se conviertan en residuos.</p>
+                <p>Extiende la vida util de los productos evitando que se conviertan en residuos.</p>
             </div>
             <div class="slide">
                 <img src="/static/images/recicla.jpg" alt="Recicla">
                 <h3>Recicla</h3>
-                <p>Transforma materiales usados en nuevos productos y reduce la contaminación.</p>
+                <p>Transforma materiales usados en nuevos productos y reduce la contaminacion.</p>
             </div>
         </div>
         <div class="benefits-image">

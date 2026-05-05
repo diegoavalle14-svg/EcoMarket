@@ -3,49 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="EcoMarket - Plataforma ecologica para compartir, reciclar y reducir el impacto ambiental.">
     <title>{% block title %}EcoMarket{% endblock %}</title>
 
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
 
 <header class="main-header">
     <div class="container-header">
-        <!-- Logo / Nombre -->
         <div class="logo">
             <a href="/">EcoMarket</a>
         </div>
 
-        <!-- Botones centrales -->
         <nav class="nav-center">
             <ul class="nav-list">
                 <li>
-                    <a href="/puntos-recoleccion" class="btn">Puntos de Recolección</a>
+                    <a href="/puntos-recoleccion" class="btn">Puntos de Recoleccion</a>
                 </li>
                 <li>
-                    <a href="/solicitudes" class="btn secondary">Sistema de Solicitudes</a>
+                    <a href="/solicitudes" class="btn secondary">Solicitudes</a>
                 </li>
                 <li>
                     <a href="/recompensas" class="btn nav-recompensas">
-                        <b><span class="nav-recompensas-label"> Mis recompensas </span></b>
+                        <b><span class="nav-recompensas-label">Mis recompensas</span></b>
                     </a>
                 </li>
             </ul>
         </nav>
 
-        <!-- Botones derecha -->
         <div class="nav-right">
             {% if user %}
-                <span style="color: white; margin-right: 15px;"></span>
-                <a href="/auth/logout" class="btn logout-btn">Cerrar Sesión</a>
+                <a href="/auth/logout" class="btn logout-btn">Cerrar Sesion</a>
             {% else %}
-                <a href="/auth/login" class="btn">Iniciar Sesión</a>
+                <a href="/auth/login" class="btn">Iniciar Sesion</a>
                 <a href="/auth/register" class="btn secondary">Registrarse</a>
             {% endif %}
         </div>
     </div>
 </header>
-
 
 <main class="main-content">
     {% block content %}

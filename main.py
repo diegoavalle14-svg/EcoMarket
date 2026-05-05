@@ -1,10 +1,11 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database.connection import engine, SessionLocal, get_db
+from app.database.connection import engine, SessionLocal, get_db, ensure_database_exists, create_tables
 from app.routers.auth import router as auth_router
 from app.routers.users import router as users_router
 from app.routers.products import router as products_router
@@ -19,7 +20,22 @@ from app.utils.security import (
     RequiresLogin,
 )
 
-app = FastAPI(title="EcoMarket API")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # -- Startup --
+    print("[EcoMarket] Verificando base de datos...")
+    ensure_database_exists()
+    print("[EcoMarket] Creando tablas si no existen...")
+    await create_tables()
+    print("[EcoMarket] Servidor listo.")
+    yield
+    # -- Shutdown --
+    await engine.dispose()
+    print("[EcoMarket] Conexion cerrada.")
+
+
+app = FastAPI(title="EcoMarket API", lifespan=lifespan)
 
 
 @app.exception_handler(RequiresLogin)
@@ -145,8 +161,6 @@ async def recompensas_page(
     return templates.TemplateResponse("recompensas.html", {"request": request, "user": user})
 
 
-
-
 @app.get("/admin-recompensas", response_class=HTMLResponse)
 async def admin_recompensas_page(
     request: Request,
@@ -156,16 +170,6 @@ async def admin_recompensas_page(
     if not user or user["role"] != "admin":
         raise RequiresLogin()
     return templates.TemplateResponse("admin_recompensas.html", {"request": request, "user": user})
-
-
-@app.on_event("startup")
-async def startup():
-    pass
-
-
-@app.on_event("shutdown")
-async def shutdown():
-    pass
 
 
 app.include_router(puntos_api.router, prefix="/api", tags=["Puntos API"])
@@ -180,4 +184,3 @@ from app.routers.admin_recompensas import router as admin_recompensas_router
 
 app.include_router(recompensas_router, prefix="/recompensas", tags=["Recompensas Usuario"])
 app.include_router(admin_recompensas_router, tags=["Recompensas Admin"])
-

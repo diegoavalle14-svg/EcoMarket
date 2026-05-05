@@ -52,7 +52,7 @@ async def register_form(
         )
     )
     await db.commit()
-    user_id = result.lastrowid
+    user_id = result.inserted_primary_key[0]
 
     # ➕ Puntos por registro
     await add_points(db, user_id, 20, "Registro de cuenta", "registro")

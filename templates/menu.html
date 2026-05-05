@@ -4,211 +4,238 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EcoMarket - Panel Administrador</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body {
-    font-family: 'Poppins', Arial, sans-serif;
-    background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
-    color: #2e7d32;
-    padding: 30px 20px 40px;
+
+:root {
+    --bg-primary: #0a0f0d;
+    --bg-secondary: #111a16;
+    --bg-card: #162018;
+    --accent: #34d399;
+    --accent-dim: #059669;
+    --accent-glow: rgba(52, 211, 153, 0.15);
+    --text-primary: #e8f5ec;
+    --text-secondary: #94a3a8;
+    --text-muted: #5c706a;
+    --border: rgba(52, 211, 153, 0.12);
+    --radius-md: 14px;
+    --radius-lg: 22px;
+    --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Header grande */
+body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    padding: 30px 20px 40px;
+    min-height: 100vh;
+}
+
 .header {
     max-width: 1200px;
-    margin: 0 auto 40px auto;
+    margin: 0 auto 36px;
     text-align: center;
-    background: linear-gradient(90deg,#165c19,#43a047);
-    color:white;
-    padding: 40px 20px 30px;
-    border-radius: 28px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.25);
-}
-.header h1 {
-    font-size: 3.4rem;
-    font-weight: 800;
-    text-shadow: 2px 3px 6px rgba(0,0,0,0.25);
-    margin-bottom: 6px;
-}
-.header p.subtitle {
-    margin-top: 4px;
-    font-size: 1rem;
-    font-weight: 500;
-    opacity: 0.95;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    padding: 40px 24px 32px;
+    border-radius: var(--radius-lg);
+    position: relative;
+    overflow: hidden;
 }
 
-/* Fila de pequeñas stats bajo el header */
+.header::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 300px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.5;
+}
+
+.header h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    background: linear-gradient(135deg, var(--accent), #a7f3d0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+}
+
+.header .subtitle {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    margin-top: 4px;
+}
+
 .quick-stats {
     max-width: 1200px;
-    margin: 0 auto 25px auto;
+    margin: 0 auto 24px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 14px;
-}
-.stat-card {
-    background: rgba(255,255,255,0.9);
-    border-radius: 14px;
-    padding: 10px 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    display:flex;
-    flex-direction:column;
-    gap:2px;
-}
-.stat-label {
-    font-size: 0.8rem;
-    color:#546e7a;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-}
-.stat-value {
-    font-size: 1.2rem;
-    font-weight: 700;
-    color:#1b5e20;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
 }
 
-/* Puntos section */
-.puntos-section {
-    max-width: 1200px;
-    margin: 0 auto 35px auto;
+.stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
-.puntos-title {
-    font-size: 1.1rem;
+
+.stat-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
     font-weight: 600;
-    color:#546e7a;
+}
+
+.stat-value {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.puntos-section { max-width: 1200px; margin: 0 auto 32px; }
+
+.puntos-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
     margin-bottom: 12px;
 }
+
 .puntos-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-    gap: 16px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
 }
+
 .puntos-card {
-    background: rgba(255,255,255,0.95);
-    border-radius: 14px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius-md);
     padding: 16px 18px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-    border-left: 4px solid #43a047;
     display: flex;
     flex-direction: column;
     gap: 6px;
-    transition: transform 0.2s, box-shadow 0.2s;
+    transition: var(--transition);
 }
+
 .puntos-card:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    border-color: rgba(52,211,153,0.3);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
 }
+
 .puntos-card-label {
-    font-size: 0.85rem;
-    color: #2e7d32;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.03em;
 }
+
 .puntos-card-value {
-    font-size: 1.8rem;
+    font-size: 1.6rem;
     font-weight: 700;
-    color: #1b5e20;
+    color: var(--accent);
 }
+
 .puntos-card-value span {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 500;
     margin-left: 4px;
+    color: var(--text-muted);
 }
 
-/* Menu grid principal */
-.menu-wrapper {
-    max-width: 1200px;
-    margin: 0 auto;
-}
+.menu-wrapper { max-width: 1200px; margin: 0 auto; }
+
 .menu-title {
-    font-size: 1.1rem;
+    font-size: 0.85rem;
     font-weight: 600;
-    color:#546e7a;
-    margin-bottom: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin-bottom: 12px;
 }
+
 .menu {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
 }
 
-/* Cards */
 .card {
-    background: white;
-    border-radius: 26px;
-    padding: 32px 22px 26px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 28px 20px 24px;
     text-align: center;
-    box-shadow: 0 10px 25px rgba(76,175,80,0.2);
-    transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+    transition: var(--transition);
     cursor: pointer;
     position: relative;
     overflow: hidden;
 }
-.card::before {
-    content:"";
-    position:absolute;
-    inset:0;
-    background: radial-gradient(circle at -20% -20%, rgba(102,187,106,0.25), transparent 55%);
-    opacity:0;
-    transition:opacity 0.3s;
-}
-.card:hover::before { opacity:1; }
+
 .card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 14px 32px rgba(76,175,80,0.35);
-}
-.card h3 {
-    color: #2e7d32;
-    margin-bottom: 10px;
-    font-size: 1.4em;
-}
-.card p {
-    color: #607d8b;
-    font-size: 0.9em;
+    transform: translateY(-4px);
+    border-color: rgba(52,211,153,0.3);
+    box-shadow: 0 12px 32px rgba(52,211,153,0.08);
 }
 
-/* SVG Icons */
+.card h3 { color: var(--text-primary); margin-bottom: 8px; font-size: 1.15rem; }
+.card p { color: var(--text-muted); font-size: 0.8rem; }
+
 .card svg {
-    width: 60px;
-    height: 60px;
-    fill: #43a047;
-    margin-bottom: 14px;
-    transition: transform 0.3s, fill 0.3s;
-}
-.card:hover svg {
-    transform: translateY(-3px) scale(1.05);
-    fill: #66bb6a;
+    width: 48px; height: 48px;
+    fill: var(--accent);
+    margin-bottom: 12px;
+    transition: var(--transition);
+    opacity: 0.8;
 }
 
-/* Logout button */
+.card:hover svg { opacity: 1; transform: scale(1.08); }
+
 .logout {
     display: block;
-    max-width: 220px;
-    margin: 35px auto 0;
-    padding: 14px;
-    background: linear-gradient(90deg, #43a047, #66bb6a);
-    color:white;
-    text-align:center;
+    max-width: 200px;
+    margin: 32px auto 0;
+    padding: 12px;
+    background: var(--bg-card);
+    border: 1px solid rgba(239,68,68,0.2);
+    color: #f87171;
+    text-align: center;
     border-radius: 999px;
     text-decoration: none;
     font-weight: 600;
-    font-size: 1rem;
-    box-shadow: 0 6px 14px rgba(0,0,0,0.25);
-    transition: background 0.3s, transform 0.2s, box-shadow 0.3s;
-}
-.logout:hover { 
-    background: linear-gradient(90deg, #388e3c, #43a047); 
-    transform: translateY(-2px);
-    box-shadow: 0 9px 20px rgba(0,0,0,0.35);
+    font-size: 0.9rem;
+    transition: var(--transition);
 }
 
-/* Responsive */
-@media (max-width: 768px){
-    body { padding: 20px 12px 30px; }
-    .header { padding: 32px 16px 24px; }
-    .header h1 { font-size: 2.4rem; }
-    .puntos-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+.logout:hover {
+    background: rgba(239,68,68,0.1);
+    border-color: #f87171;
+}
+
+@media (max-width: 768px) {
+    body { padding: 16px 12px 24px; }
+    .header { padding: 28px 16px 24px; }
+    .header h1 { font-size: 2.2rem; }
 }
 </style>
 </head>
@@ -216,11 +243,10 @@ body {
 
 <div class="header">
     <h1>EcoMarket</h1>
-    <p class="subtitle">Bienvenido Sr. <b>Administrador</b></p>
-    <p class="subtitle">Gestione productos, solicitudes, usuarios, recompensas y puntos de recolección desde un solo lugar.</p>
+    <p class="subtitle">Bienvenido, <b>Administrador</b></p>
+    <p class="subtitle">Gestione productos, solicitudes, usuarios, recompensas y puntos de recoleccion.</p>
 </div>
 
-<!-- Stats de consejos -->
 <div class="quick-stats">
     <div class="stat-card">
         <span class="stat-label">Primeros pasos</span>
@@ -232,18 +258,16 @@ body {
     </div>
     <div class="stat-card">
         <span class="stat-label">Usuarios</span>
-        <span class="stat-value">Mantén actualizada la lista de cuentas.</span>
+        <span class="stat-value">Manten actualizada la lista de cuentas.</span>
     </div>
     <div class="stat-card">
         <span class="stat-label">Recompensas</span>
-        <span class="stat-value">Actualiza el catálogo de premios y puntos.</span>
+        <span class="stat-value">Actualiza el catalogo de premios y puntos.</span>
     </div>
 </div>
 
-<!-- SECCIÓN DE PUNTOS QUE PUEDEN GANAR LOS USUARIOS -->
 <div class="puntos-section">
     <p class="puntos-title">Sistema de Puntos - Actividades que generan recompensas</p>
-    
     <div class="puntos-grid">
         {% for key, info in puntos_info.items() %}
         <div class="puntos-card">
@@ -255,48 +279,37 @@ body {
 </div>
 
 <div class="menu-wrapper">
-    <p class="menu-title">Módulos de administración</p>
-
+    <p class="menu-title">Modulos de administracion</p>
     <div class="menu">
         <div class="card" onclick="location.href='/admin_productos'">
             <svg viewBox="0 0 24 24"><path d="M3 3h18v18H3V3zm2 2v14h14V5H5zm3 3h8v2H8V8zm0 4h8v2H8v-2z"/></svg>
             <h3>Productos</h3>
-            <p>Ver y administrar productos del catálogo.</p>
+            <p>Ver y administrar productos del catalogo.</p>
         </div>
-
         <div class="card" onclick="location.href='/puntos-recoleccion-admin'">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
-            </svg>
-            <h3>Puntos de Recolección</h3>
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+            <h3>Puntos de Recoleccion</h3>
             <p>Consultar y administrar puntos de entrega.</p>
         </div>
-
         <div class="card" onclick="location.href='/solicitudes-admin'">
             <svg viewBox="0 0 24 24"><path d="M3 3h18v2H3V3zm0 4h18v14H3V7zm2 2v10h14V9H5z"/></svg>
             <h3>Solicitudes</h3>
             <p>Revisar, aprobar o rechazar solicitudes.</p>
         </div>
-
         <div class="card" onclick="location.href='/gestion-usuarios'">
-            <svg viewBox="0 0 24 24">
-                <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-            </svg>
-            <h3>Gestión de Usuarios</h3>
+            <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <h3>Gestion de Usuarios</h3>
             <p>Agregar, editar y administrar cuentas.</p>
         </div>
-
         <div class="card" onclick="location.href='/admin-recompensas'">
-            <svg viewBox="0 0 24 24">
-                <path d="M12 2a7 7 0 0 0-7 7c0 3.87 3.13 7 7 7s7-3.13 7-7a7 7 0 0 0-7-7zm0 18l-3.5 2-1-3.8L4 16.5l3.9-.3L12 13l2.1 3.2 3.9.3-3.5 1.7-1 3.8z"/>
-            </svg>
+            <svg viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 3.87 3.13 7 7 7s7-3.13 7-7a7 7 0 0 0-7-7zm0 18l-3.5 2-1-3.8L4 16.5l3.9-.3L12 13l2.1 3.2 3.9.3-3.5 1.7-1 3.8z"/></svg>
             <h3>Recompensas</h3>
             <p>Configurar premios y sistema de puntos.</p>
         </div>
     </div>
 </div>
 
-<a class="logout" href="/auth/logout">Cerrar sesión</a>
+<a class="logout" href="/auth/logout">Cerrar sesion</a>
 
 </body>
 </html>

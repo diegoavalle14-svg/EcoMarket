@@ -72,7 +72,7 @@ async def create_product(data: ProductBase, user=Depends(require_admin), db: Asy
         await db.commit()
         return {
             "msg": "Producto creado",
-            "id": result.lastrowid
+            "id": result.inserted_primary_key[0]
         }
     except Exception as e:
         await db.rollback()
