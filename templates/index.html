@@ -14,7 +14,7 @@
 </section>
 
 <!-- CATEGORIAS -->
-<section class="categories">
+<section class="categories reveal">
     <h2>Categorias de Reciclaje</h2>
     <div class="category-grid">
         <div class="category-card">
@@ -51,7 +51,7 @@
 </section>
 
 <!-- BENEFICIOS -->
-<section class="benefits">
+<section class="benefits reveal">
     <h2>Reduce, Reusa y Recicla</h2>
     <div class="benefits-container">
         <div class="slider-container">
@@ -77,6 +77,46 @@
     </div>
 </section>
 
+<!-- HOW IT WORKS -->
+<section class="how-it-works reveal" style="padding: 60px 24px; text-align: center; background: var(--bg-primary);">
+    <h2 style="font-size: 2.2rem; font-weight: 700; color: var(--text-primary); margin-bottom: 40px;">Como Funciona</h2>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px; max-width: 1000px; margin: 0 auto;">
+        <div style="flex: 1; min-width: 250px; background: var(--bg-card); padding: 30px 20px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+            <div style="width: 50px; height: 50px; background: var(--accent-glow); color: var(--accent); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 20px;">1</div>
+            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.2rem;">Registrate</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Crea tu cuenta de forma gratuita para unirte a la red comunitaria de reciclaje.</p>
+        </div>
+        <div style="flex: 1; min-width: 250px; background: var(--bg-card); padding: 30px 20px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+            <div style="width: 50px; height: 50px; background: var(--accent-glow); color: var(--accent); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 20px;">2</div>
+            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.2rem;">Publica o Solicita</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Ofrece los materiales que ya no necesitas o solicita materiales disponibles de otros usuarios.</p>
+        </div>
+        <div style="flex: 1; min-width: 250px; background: var(--bg-card); padding: 30px 20px; border-radius: var(--radius-lg); border: 1px solid var(--border);">
+            <div style="width: 50px; height: 50px; background: var(--accent-glow); color: var(--accent); border-radius: var(--radius-full); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; margin: 0 auto 20px;">3</div>
+            <h3 style="color: var(--text-primary); margin-bottom: 12px; font-size: 1.2rem;">Gana Puntos</h3>
+            <p style="color: var(--text-secondary); font-size: 0.95rem;">Acumula puntos con cada accion ecologica y canjealos por atractivas recompensas.</p>
+        </div>
+    </div>
+</section>
+
+<!-- IMPACT STATS -->
+<section class="impact-stats reveal" style="padding: 60px 24px; text-align: center; background: radial-gradient(circle at center, rgba(52,211,153,0.05) 0%, var(--bg-secondary) 100%);">
+    <div style="max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
+        <div style="padding: 20px;">
+            <h3 style="font-size: 3rem; color: var(--accent); font-weight: 800; margin-bottom: 5px;">+5K</h3>
+            <p style="color: var(--text-secondary); font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Usuarios Activos</p>
+        </div>
+        <div style="padding: 20px;">
+            <h3 style="font-size: 3rem; color: var(--accent); font-weight: 800; margin-bottom: 5px;">12T</h3>
+            <p style="color: var(--text-secondary); font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Material Reciclado</p>
+        </div>
+        <div style="padding: 20px;">
+            <h3 style="font-size: 3rem; color: var(--accent); font-weight: 800; margin-bottom: 5px;">300+</h3>
+            <p style="color: var(--text-secondary); font-size: 1rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.05em;">Puntos Activos</p>
+        </div>
+    </div>
+</section>
+
 <!-- SLIDER JS -->
 <script>
 let slides = document.querySelectorAll('.slide');
@@ -84,16 +124,35 @@ let currentSlide = 0;
 
 function showSlide(index) {
     slides.forEach(s => s.classList.remove('active'));
-    slides[index].classList.add('active');
+    if(slides.length > 0) {
+        slides[index].classList.add('active');
+    }
 }
 
 function nextSlide() {
-    currentSlide = (currentSlide + 1) % slides.length;
+    if(slides.length > 0) {
+        currentSlide = (currentSlide + 1) % slides.length;
+        showSlide(currentSlide);
+    }
+}
+
+if(slides.length > 0) {
+    setInterval(nextSlide, 5000);
     showSlide(currentSlide);
 }
 
-setInterval(nextSlide, 5000);
-showSlide(currentSlide);
+// Scroll Reveal Observer
+const revealElements = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('active');
+            observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.15 });
+
+revealElements.forEach(el => revealObserver.observe(el));
 </script>
 
 {% endblock %}

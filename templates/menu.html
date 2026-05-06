@@ -7,239 +7,312 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
 
 :root {
-    --bg-primary: #0a0f0d;
-    --bg-secondary: #111a16;
-    --bg-card: #162018;
-    --accent: #34d399;
-    --accent-dim: #059669;
-    --accent-glow: rgba(52, 211, 153, 0.15);
-    --text-primary: #e8f5ec;
-    --text-secondary: #94a3a8;
-    --text-muted: #5c706a;
-    --border: rgba(52, 211, 153, 0.12);
-    --radius-md: 14px;
-    --radius-lg: 22px;
-    --transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    --bg-primary: #050505;
+    --bg-gradient: linear-gradient(135deg, #050505 0%, #0d1a14 100%);
+    --bg-card: rgba(20, 28, 24, 0.6);
+    --accent: #10b981;
+    --accent-glow: rgba(16, 185, 129, 0.4);
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #475569;
+    --border: rgba(255, 255, 255, 0.08);
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 body {
     font-family: 'Inter', system-ui, sans-serif;
-    background: var(--bg-primary);
+    background: var(--bg-gradient);
     color: var(--text-primary);
-    padding: 30px 20px 40px;
+    padding: 40px 20px;
     min-height: 100vh;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Background ambient glow */
+body::before {
+    content: '';
+    position: absolute;
+    top: -20%;
+    left: -10%;
+    width: 50%;
+    height: 50%;
+    background: radial-gradient(circle, rgba(16,185,129,0.15) 0%, transparent 60%);
+    z-index: -1;
+    border-radius: 50%;
+}
+body::after {
+    content: '';
+    position: absolute;
+    bottom: -20%;
+    right: -10%;
+    width: 60%;
+    height: 60%;
+    background: radial-gradient(circle, rgba(5,150,105,0.1) 0%, transparent 60%);
+    z-index: -1;
+    border-radius: 50%;
 }
 
 .header {
     max-width: 1200px;
-    margin: 0 auto 36px;
+    margin: 0 auto 40px;
     text-align: center;
     background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border: 1px solid var(--border);
-    padding: 40px 24px 32px;
+    padding: 50px 30px;
     border-radius: var(--radius-lg);
     position: relative;
-    overflow: hidden;
-}
-
-.header::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 300px;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    opacity: 0.5;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
 }
 
 .header h1 {
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 800;
-    letter-spacing: -0.04em;
-    background: linear-gradient(135deg, var(--accent), #a7f3d0);
+    letter-spacing: -0.05em;
+    background: linear-gradient(to right, #ffffff, var(--accent));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .header .subtitle {
-    font-size: 0.9rem;
+    font-size: 1.05rem;
     color: var(--text-secondary);
-    margin-top: 4px;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.header .subtitle b {
+    color: var(--accent);
 }
 
 .quick-stats {
     max-width: 1200px;
-    margin: 0 auto 24px;
+    margin: 0 auto 40px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 20px;
 }
 
 .stat-card {
     background: var(--bg-card);
+    backdrop-filter: blur(12px);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 14px 16px;
+    padding: 20px;
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
 }
 
 .stat-label {
-    font-size: 0.7rem;
-    color: var(--text-muted);
+    font-size: 0.75rem;
+    color: var(--accent);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
-    font-weight: 600;
+    letter-spacing: 0.1em;
+    font-weight: 700;
 }
 
 .stat-value {
-    font-size: 0.85rem;
-    font-weight: 500;
-    color: var(--text-secondary);
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--text-primary);
+    line-height: 1.5;
 }
 
-.puntos-section { max-width: 1200px; margin: 0 auto 32px; }
+.puntos-section { max-width: 1200px; margin: 0 auto 40px; }
 
 .puntos-title {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    color: var(--text-muted);
+    color: var(--text-secondary);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 12px;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.puntos-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
 }
 
 .puntos-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 12px;
-}
-
-.puntos-card {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-left: 3px solid var(--accent);
-    border-radius: var(--radius-md);
-    padding: 16px 18px;
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    transition: var(--transition);
-}
-
-.puntos-card:hover {
-    transform: translateY(-2px);
-    border-color: rgba(52,211,153,0.3);
-    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-}
-
-.puntos-card-label {
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-}
-
-.puntos-card-value {
-    font-size: 1.6rem;
-    font-weight: 700;
-    color: var(--accent);
-}
-
-.puntos-card-value span {
-    font-size: 0.7rem;
-    font-weight: 500;
-    margin-left: 4px;
-    color: var(--text-muted);
-}
-
-.menu-wrapper { max-width: 1200px; margin: 0 auto; }
-
-.menu-title {
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    margin-bottom: 12px;
-}
-
-.menu {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 16px;
 }
 
-.card {
-    background: var(--bg-card);
+.puntos-card {
+    background: linear-gradient(145deg, rgba(30,41,59,0.4), rgba(15,23,42,0.4));
     border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 28px 20px 24px;
-    text-align: center;
+    border-radius: var(--radius-md);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
     transition: var(--transition);
-    cursor: pointer;
     position: relative;
     overflow: hidden;
 }
 
-.card:hover {
-    transform: translateY(-4px);
-    border-color: rgba(52,211,153,0.3);
-    box-shadow: 0 12px 32px rgba(52,211,153,0.08);
+.puntos-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 4px; height: 100%;
+    background: var(--accent);
 }
 
-.card h3 { color: var(--text-primary); margin-bottom: 8px; font-size: 1.15rem; }
-.card p { color: var(--text-muted); font-size: 0.8rem; }
+.puntos-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(16,185,129,0.4);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+}
+
+.puntos-card-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.puntos-card-value {
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: #fff;
+    text-shadow: 0 0 10px var(--accent-glow);
+}
+
+.puntos-card-value span {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--accent);
+    margin-left: 6px;
+}
+
+.menu-wrapper { max-width: 1200px; margin: 0 auto; }
+
+.menu-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.menu-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+}
+
+.menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.card {
+    background: var(--bg-card);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px 24px;
+    text-align: center;
+    transition: var(--transition);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card:hover {
+    transform: translateY(-8px);
+    background: rgba(30, 41, 59, 0.8);
+    border-color: rgba(16,185,129,0.5);
+    box-shadow: 0 20px 40px rgba(16,185,129,0.15);
+}
 
 .card svg {
-    width: 48px; height: 48px;
-    fill: var(--accent);
-    margin-bottom: 12px;
+    width: 54px; height: 54px;
+    fill: url(#icon-gradient);
+    margin-bottom: 16px;
     transition: var(--transition);
-    opacity: 0.8;
 }
 
-.card:hover svg { opacity: 1; transform: scale(1.08); }
+.card:hover svg {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.card h3 { 
+    color: #fff; 
+    margin-bottom: 10px; 
+    font-size: 1.25rem; 
+    font-weight: 700;
+}
+.card p { 
+    color: var(--text-secondary); 
+    font-size: 0.85rem; 
+    line-height: 1.5;
+}
 
 .logout {
     display: block;
-    max-width: 200px;
-    margin: 32px auto 0;
-    padding: 12px;
-    background: var(--bg-card);
-    border: 1px solid rgba(239,68,68,0.2);
+    max-width: 220px;
+    margin: 50px auto 0;
+    padding: 14px;
+    background: transparent;
+    border: 1px solid rgba(239,68,68,0.4);
     color: #f87171;
     text-align: center;
     border-radius: 999px;
-    text-decoration: none;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     transition: var(--transition);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
 .logout:hover {
-    background: rgba(239,68,68,0.1);
+    background: rgba(239,68,68,0.15);
     border-color: #f87171;
+    box-shadow: 0 0 20px rgba(239,68,68,0.2);
 }
 
 @media (max-width: 768px) {
-    body { padding: 16px 12px 24px; }
-    .header { padding: 28px 16px 24px; }
-    .header h1 { font-size: 2.2rem; }
+    body { padding: 20px 16px; }
+    .header { padding: 40px 20px; }
+    .header h1 { font-size: 2.5rem; }
 }
 </style>
 </head>
 <body>
+
+<!-- SVG Gradient Definition -->
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="icon-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34d399" />
+      <stop offset="100%" stop-color="#059669" />
+    </linearGradient>
+  </defs>
+</svg>
 
 <div class="header">
     <h1>EcoMarket</h1>
@@ -263,6 +336,18 @@ body {
     <div class="stat-card">
         <span class="stat-label">Recompensas</span>
         <span class="stat-value">Actualiza el catalogo de premios y puntos.</span>
+    </div>
+</div>
+
+<div class="chart-section" style="max-width: 1200px; margin: 0 auto 40px; background: var(--bg-card); backdrop-filter: blur(16px); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+    <h3 style="color: var(--text-primary); font-size: 1.2rem; font-weight: 700; margin-bottom: 24px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid var(--border); padding-bottom: 12px;">Estadisticas Recientes</h3>
+    <div style="display: flex; gap: 30px; flex-wrap: wrap; justify-content: space-between;">
+        <div style="flex: 1; min-width: 300px; height: 280px; position: relative;">
+            <canvas id="usersChart"></canvas>
+        </div>
+        <div style="flex: 1; min-width: 300px; height: 280px; position: relative; display: flex; justify-content: center;">
+            <canvas id="materialsChart"></canvas>
+        </div>
     </div>
 </div>
 
@@ -310,6 +395,74 @@ body {
 </div>
 
 <a class="logout" href="/auth/logout">Cerrar sesion</a>
+
+<script>
+    Chart.defaults.color = '#94a3b8';
+    Chart.defaults.font.family = "'Inter', sans-serif";
+
+    const ctxUsers = document.getElementById('usersChart').getContext('2d');
+    const usersGradient = ctxUsers.createLinearGradient(0, 0, 0, 400);
+    usersGradient.addColorStop(0, 'rgba(16, 185, 129, 0.5)');
+    usersGradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');
+
+    new Chart(ctxUsers, {
+        type: 'line',
+        data: {
+            labels: ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun'],
+            datasets: [{
+                label: 'Nuevos Usuarios',
+                data: [65, 85, 120, 160, 210, 280],
+                borderColor: '#10b981',
+                backgroundColor: usersGradient,
+                borderWidth: 3,
+                tension: 0.4,
+                fill: true,
+                pointBackgroundColor: '#050505',
+                pointBorderColor: '#10b981',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { position: 'top' }
+            },
+            scales: {
+                y: { grid: { color: 'rgba(255, 255, 255, 0.05)' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    const ctxMaterials = document.getElementById('materialsChart').getContext('2d');
+    new Chart(ctxMaterials, {
+        type: 'doughnut',
+        data: {
+            labels: ['Plasticos', 'Vidrio', 'Papel', 'Metales'],
+            datasets: [{
+                data: [45, 25, 20, 10],
+                backgroundColor: [
+                    '#10b981',
+                    '#3b82f6',
+                    '#f59e0b',
+                    '#8b5cf6'
+                ],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '70%',
+            plugins: {
+                legend: { position: 'right' }
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

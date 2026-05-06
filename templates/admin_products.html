@@ -148,7 +148,15 @@ body {
                     <option value="agotado">Agotado</option>
                 </select>
             </div>
-            <div class="form-group"><label>URL Imagen:</label><input type="url" id="image_url" placeholder="https://..."></div>
+            <div class="form-group">
+                <label>Imagen del Producto:</label>
+                <div id="drop-zone" style="border: 2px dashed #c8e6c9; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; position: relative; transition: 0.3s; background: #fafdfa;">
+                    <span id="drop-text" style="color: #27ae60; font-weight: 500;">Arrastra tu imagen o haz clic para subir</span>
+                    <input type="file" id="file_input" accept="image/*" style="display: none;">
+                    <img id="image_preview" src="" style="max-width: 100%; max-height: 150px; display: none; margin: 10px auto 0; border-radius: 8px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+                    <input type="hidden" id="image_url">
+                </div>
+            </div>
             <div class="form-buttons">
                 <button type="button" class="btn-cancel" onclick="closeModal()">Cancelar</button>
                 <button type="submit" class="btn-submit">Guardar</button>
@@ -204,12 +212,27 @@ async function openEditModal(id){
             document.getElementById('stock').value=p.stock;
             document.getElementById('statusInput').value=p.status;
             document.getElementById('image_url').value=p.image_url||'';
+            if(p.image_url) {
+                document.getElementById('image_preview').src = p.image_url;
+                document.getElementById('image_preview').style.display = 'block';
+                document.getElementById('drop-text').style.display = 'none';
+            } else {
+                document.getElementById('image_preview').style.display = 'none';
+                document.getElementById('drop-text').style.display = 'block';
+            }
             document.getElementById('productModal').style.display='block';
         }
     } catch(e){ console.error(e); }
 }
 
-function closeModal(){ document.getElementById('productModal').style.display='none'; document.getElementById('productForm').reset(); editingProductId=null; }
+function closeModal(){ 
+    document.getElementById('productModal').style.display='none'; 
+    document.getElementById('productForm').reset(); 
+    document.getElementById('image_preview').style.display='none';
+    document.getElementById('drop-text').style.display='block';
+    document.getElementById('image_url').value = '';
+    editingProductId=null; 
+}
 
 document.getElementById('productForm').addEventListener('submit',async(e)=>{
     e.preventDefault();
@@ -245,6 +268,57 @@ function applyFilters(){
 }
 
 window.onclick=function(e){ if(e.target===document.getElementById('productModal')) closeModal(); }
+
+// Drag and Drop Logic
+const dropZone = document.getElementById('drop-zone');
+const fileInput = document.getElementById('file_input');
+const imagePreview = document.getElementById('image_preview');
+const imageUrlInput = document.getElementById('image_url');
+const dropText = document.getElementById('drop-text');
+
+dropZone.addEventListener('click', () => fileInput.click());
+
+dropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    dropZone.style.backgroundColor = '#e8f5e9';
+    dropZone.style.borderColor = '#2ecc71';
+});
+
+dropZone.addEventListener('dragleave', () => {
+    dropZone.style.backgroundColor = '#fafdfa';
+    dropZone.style.borderColor = '#c8e6c9';
+});
+
+dropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropZone.style.backgroundColor = '#fafdfa';
+    dropZone.style.borderColor = '#c8e6c9';
+    
+    if(e.dataTransfer.files.length > 0) {
+        handleFile(e.dataTransfer.files[0]);
+    }
+});
+
+fileInput.addEventListener('change', (e) => {
+    if(e.target.files.length > 0) {
+        handleFile(e.target.files[0]);
+    }
+});
+
+function handleFile(file) {
+    if(!file.type.startsWith('image/')) {
+        alert('Por favor selecciona una imagen válida.');
+        return;
+    }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        imageUrlInput.value = e.target.result; // Base64
+        imagePreview.src = e.target.result;
+        imagePreview.style.display = 'block';
+        dropText.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+}
 
 loadProducts();
 </script>
