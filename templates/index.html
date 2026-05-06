@@ -51,31 +51,62 @@
 </section>
 
 <!-- BENEFICIOS -->
-<section class="benefits reveal">
-    <h2>Reduce, Reusa y Recicla</h2>
-    <div class="benefits-container">
-        <div class="slider-container">
-            <div class="slide active">
-                <img src="/static/images/reducir.jpg" alt="Reduce">
-                <h3>Reduce</h3>
-                <p>Minimiza el impacto ambiental al disminuir el consumo innecesario de recursos.</p>
+<section class="benefits reveal" style="padding: 80px 24px; background: var(--bg-secondary); position: relative; overflow: hidden;">
+    <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at top right, var(--accent-glow) 0%, transparent 50%); z-index: 1;"></div>
+    <div style="position: relative; z-index: 2; max-width: 1200px; margin: 0 auto; text-align: center;">
+        <h2 style="font-size: 2.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 50px;">Las Tres R's del Cuidado Ambiental</h2>
+        
+        <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 30px;">
+            <!-- Card 1 -->
+            <div class="rrr-card" style="flex: 1; min-width: 300px; background: var(--bg-card); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); transition: 0.4s; position: relative; cursor: crosshair;">
+                <img src="/static/images/reducir.jpg" alt="Reduce" style="width: 100%; height: 200px; object-fit: cover; transition: 0.4s; filter: brightness(0.8);">
+                <div style="padding: 30px; position: relative;">
+                    <div style="position: absolute; top: -30px; right: 30px; width: 60px; height: 60px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px var(--accent-glow);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12H3"></path></svg>
+                    </div>
+                    <h3 style="font-size: 1.6rem; color: var(--text-primary); margin-bottom: 12px; text-align: left; font-weight: 700;">Reduce</h3>
+                    <p style="color: var(--text-secondary); text-align: left; font-size: 0.95rem; line-height: 1.6;">Minimiza el impacto ambiental al disminuir el consumo innecesario de recursos. Comprar solo lo necesario es el primer paso.</p>
+                </div>
             </div>
-            <div class="slide">
-                <img src="/static/images/reusar.jpg" alt="Reusa">
-                <h3>Reusa</h3>
-                <p>Extiende la vida util de los productos evitando que se conviertan en residuos.</p>
+
+            <!-- Card 2 -->
+            <div class="rrr-card" style="flex: 1; min-width: 300px; background: var(--bg-card); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); transition: 0.4s; position: relative; cursor: crosshair;">
+                <img src="/static/images/reusar.jpg" alt="Reusa" style="width: 100%; height: 200px; object-fit: cover; transition: 0.4s; filter: brightness(0.8);">
+                <div style="padding: 30px; position: relative;">
+                    <div style="position: absolute; top: -30px; right: 30px; width: 60px; height: 60px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px var(--accent-glow);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"></path><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <h3 style="font-size: 1.6rem; color: var(--text-primary); margin-bottom: 12px; text-align: left; font-weight: 700;">Reusa</h3>
+                    <p style="color: var(--text-secondary); text-align: left; font-size: 0.95rem; line-height: 1.6;">Extiende la vida util de los productos reparandolos o dandoles un nuevo proposito para evitar que se conviertan en basura.</p>
+                </div>
             </div>
-            <div class="slide">
-                <img src="/static/images/recicla.jpg" alt="Recicla">
-                <h3>Recicla</h3>
-                <p>Transforma materiales usados en nuevos productos y reduce la contaminacion.</p>
+
+            <!-- Card 3 -->
+            <div class="rrr-card" style="flex: 1; min-width: 300px; background: var(--bg-card); border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border); transition: 0.4s; position: relative; cursor: crosshair;">
+                <img src="/static/images/recicla.jpg" alt="Recicla" style="width: 100%; height: 200px; object-fit: cover; transition: 0.4s; filter: brightness(0.8);">
+                <div style="padding: 30px; position: relative;">
+                    <div style="position: absolute; top: -30px; right: 30px; width: 60px; height: 60px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px var(--accent-glow);">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line><line x1="4" y1="4" x2="9" y2="9"></line></svg>
+                    </div>
+                    <h3 style="font-size: 1.6rem; color: var(--text-primary); margin-bottom: 12px; text-align: left; font-weight: 700;">Recicla</h3>
+                    <p style="color: var(--text-secondary); text-align: left; font-size: 0.95rem; line-height: 1.6;">Transforma los materiales que ya no sirven en materia prima para la fabricacion de nuevos articulos, reduciendo la contaminacion.</p>
+                </div>
             </div>
-        </div>
-        <div class="benefits-image">
-            <img src="/static/images/las3r.jpg" alt="Reduce, Reusa, Recicla">
         </div>
     </div>
 </section>
+
+<style>
+.rrr-card:hover {
+    transform: translateY(-10px);
+    border-color: var(--accent);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+}
+.rrr-card:hover img {
+    transform: scale(1.05);
+    filter: brightness(1);
+}
+</style>
 
 <!-- HOW IT WORKS -->
 <section class="how-it-works reveal" style="padding: 60px 24px; text-align: center; background: var(--bg-primary);">

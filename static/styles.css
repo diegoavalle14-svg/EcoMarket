@@ -76,7 +76,7 @@ img { max-width: 100%; display: block; }
 =========================== */
 .main-header {
     width: 100%;
-    background: rgba(10, 15, 13, 0.85);
+    background: var(--bg-card);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
     padding: 12px 24px;
@@ -428,10 +428,16 @@ a.btn.secondary:hover {
 }
 
 .footer-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
     margin-bottom: 32px;
+}
+
+.footer-col {
+    flex: 1;
+    min-width: 200px;
 }
 
 .footer-col h4 {

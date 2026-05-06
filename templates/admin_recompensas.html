@@ -201,6 +201,27 @@ body {
 @media(max-width:900px){
     .admin-container { grid-template-columns:1fr; }
 }
+/* NEW DARK GLASS THEME OVERRIDES */
+body { background: #050505; background: linear-gradient(135deg, #050505 0%, #0d1a14 100%) !important; color: #f8fafc !important; }
+.header { background: rgba(20, 28, 24, 0.6) !important; backdrop-filter: blur(20px) !important; border: 1px solid rgba(255,255,255,0.08) !important; border-radius: 24px !important; margin: 20px auto 40px !important; max-width: 1200px !important; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5) !important; color: #f8fafc !important; }
+.header h1 { background: linear-gradient(to right, #ffffff, #10b981) !important; -webkit-background-clip: text !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; }
+.header p { color: #94a3b8 !important; }
+.card-table, .card-form, .filters-panel, .product-card, .modal-content, .admin-container > div, .form-section, .tab-btn { background: rgba(20, 28, 24, 0.6) !important; backdrop-filter: blur(16px) !important; border: 1px solid rgba(255,255,255,0.08) !important; color: #f8fafc !important; }
+.tab-btn.active { background: #10b981 !important; color: #fff !important; border-color: #10b981 !important; }
+table { background: transparent !important; }
+table th, table td { border-bottom: 1px solid rgba(255,255,255,0.08) !important; color: #f8fafc !important; }
+table thead tr, th { background: rgba(16,185,129,0.1) !important; }
+table tbody tr:hover { background: rgba(16,185,129,0.05) !important; }
+label, h2, h3, h4 { color: #f8fafc !important; }
+p, span, .form-note { color: #94a3b8 !important; }
+input, select, textarea { background: rgba(0,0,0,0.3) !important; color: #fff !important; border: 1px solid rgba(255,255,255,0.15) !important; }
+input:focus, select:focus, textarea:focus { border-color: #10b981 !important; outline: none !important; box-shadow: 0 0 0 2px rgba(16,185,129,0.3) !important; }
+.btn-primary, .create, .btn-submit, .tab-btn.active { background: #10b981 !important; color: #fff !important; }
+.btn-primary:hover, .create:hover, .btn-submit:hover { background: #059669 !important; }
+.btn-secondary, .back, .btn-cancel, .btn-back { background: rgba(255,255,255,0.1) !important; color: #f8fafc !important; border: 1px solid rgba(255,255,255,0.1) !important; }
+.btn-secondary:hover, .back:hover, .btn-cancel:hover, .btn-back:hover { background: rgba(255,255,255,0.2) !important; }
+.alert-success { background: rgba(16,185,129,0.1) !important; border: 1px solid rgba(16,185,129,0.2) !important; color: #10b981 !important; }
+.alert-error { background: rgba(239,68,68,0.1) !important; border: 1px solid rgba(239,68,68,0.2) !important; color: #f87171 !important; }
 </style>
 </head>
 <body>
